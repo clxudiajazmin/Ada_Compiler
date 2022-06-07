@@ -353,3 +353,22 @@ void revisit_dump(FILE *of){
   		q = q->next;	
 	}
 }
+
+int num_of_msg = 0; 
+void add_to_str_messages(char *str){
+	/* manage space for strings */
+	if(num_of_msg==0){
+		str_messages = (char**) malloc(1*sizeof(char*));
+	}
+	else{
+		str_messages = (char**) realloc(str_messages, (num_of_msg + 1)*sizeof(char*));
+	}
+	/* allocate space for the string */
+	str_messages[num_of_msg] = (char*) malloc((strlen(str) + 1) * sizeof(char));
+
+	/* copy string */
+	strcpy(str_messages[num_of_msg], str);
+
+	/* increase counter */
+	num_of_msg++;
+}

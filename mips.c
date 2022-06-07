@@ -5,6 +5,7 @@
 #include "semantics.h"
 #include "symtab.c"
 
+
 void generate_code()
 {
     FILE *fp;
