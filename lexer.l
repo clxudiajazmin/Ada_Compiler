@@ -10,7 +10,7 @@
 	#include "parser.tab.h"
 	extern FILE *yyin;
 	extern FILE *yyout;
-	
+
 	int lineno = 1; // initialize to 1
 	void ret_print(char *token_type);
 	void yyerror();
@@ -26,7 +26,7 @@ STRING			\"{PRINT}*\"
 CHARCONST		(\'{PRINT}\')|(\'\\[nftrbv]\')
 %%
 
-"--".*			{ printf("Comentario en linea %d\n", lineno); } 
+"--".*			{ printf("Comentario en linea %d\n", lineno); }
 "Character"     { return CHAR; }
 "String"        { return STR; }
 "Integer"       { return INT; }
@@ -95,7 +95,7 @@ CHARCONST		(\'{PRINT}\')|(\'\\[nftrbv]\')
 "for"           { return FOR; }
 "in"            { return IN; }
 "loop"          { return LOOP; }
-"reverse"          { return REVERSE; }
+"reverse"       { return REVERSE; }
 
 "Put_Line"		{ return PUT; }
 "Get_Line"		{ return GET; }
@@ -109,7 +109,7 @@ CHARCONST		(\'{PRINT}\')|(\'\\[nftrbv]\')
 {INTCONST} 		{ yylval.val.ival = atoi(yytext); return INTCONST; }
 {FLOATCONST} 	{ yylval.val.fval = atof(yytext); return FLOATCONST; }
 {STRING} 		{ yylval.val.sval = malloc(yyleng * sizeof(char));
-				   strcpy(yylval.val.sval, yytext);  return STRING;  
+				   strcpy(yylval.val.sval, yytext);  return STRING;
 				}
 {CHARCONST}		{ yylval.val.cval = yytext[1];    return CHARCONST; }
 
@@ -121,4 +121,3 @@ CHARCONST		(\'{PRINT}\')|(\'\\[nftrbv]\')
 .				{ yyerror("No reconocido"); }
 
 %%
-

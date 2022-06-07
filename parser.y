@@ -12,12 +12,12 @@
 	extern int lineno;
 	extern int yylex();
 	void yyerror();
-	
+
 	// for declarations
 	void add_to_names(list_t *entry);
 	list_t **names;
 	int nc = 0;
-	
+
 	// for else ifs
 	void add_elseif(AST_Node *elsif);
 	AST_Node **elsifs;
@@ -27,16 +27,16 @@
 /* YYSTYPE union */
 %union{
 	// different types of values
-	Value val;   
-	
+	Value val;
+
 	// structures
 	list_t* symtab_item;
 	AST_Node* node;
-	
+
 	// for declarations
 	int data_type;
 	int const_type;
-	
+
 }
 
 
@@ -66,7 +66,7 @@
 %left ADDOP
 %left MULOP DIVOP
 %right NOTOP INCR
-%left LPAREN RPAREN LBRACK RBRACK 
+%left LPAREN RPAREN LBRACK RBRACK
 
 %type <node> program
 %type <node> declarations declaration
@@ -89,7 +89,7 @@ procedure: PROC IDENT IS declarations BEG statements END IDENT SEMI
 ;
 
 declarations: declarations declaration
-|  declaration 
+|  declaration
 | /* empty */
 ;
 
@@ -98,9 +98,9 @@ declaration: names  INI type SEMI
 		int i;
 		$$ = new_ast_decl_node($3, names, nc);
 		nc = 0;
-		
+
 		AST_Node_Decl *temp = (AST_Node_Decl*) $$;
-		
+
 		// declare types of the names
 		for(i=0; i < temp->names_count; i++){
 			// variable
@@ -131,7 +131,7 @@ constant: INTCONST 	{ $$ = new_ast_const_node(INT_TYPE, $1);  }
 | CHARCONST			{ $$ = new_ast_const_node(CHAR_TYPE, $1);  }
 ;
 
-statements: statements statement 
+statements: statements statement
 	{
 		AST_Node_Statements *temp = (AST_Node_Statements*) $1;
 		$$ = new_statements_node(temp->statements, temp->statement_count, $2);
@@ -142,13 +142,13 @@ statements: statements statement
 	}
 ;
 
-statement: assigment 
+statement: assigment
 	{
 		$$ = $1; /* just pass information */
 		ast_traversal($$); /* just for testing */
 	}
-| if_statement 
-	{ 
+| if_statement
+	{
 		$$ = $1; /* just pass information */
 		ast_traversal($$); /* just for testing */
 	}
@@ -175,34 +175,64 @@ if_statement: IF expression THEN statements elsif_part else_part END IF SEMI
 	}
 ;
 
-elsif_part: elsif_part ELSIF expression THEN statements 
+elsif_part: elsif_part ELSIF expression THEN statements
 	{
 		AST_Node *temp = new_ast_elsif_node($3, $5);
 		add_elseif(temp);
 	}
-|ELSIF expression THEN statements  
+|ELSIF expression THEN statements
 	{
 		AST_Node *temp = new_ast_elsif_node($2, $4);
 		add_elseif(temp);
 	}
-; 
+;
 
 else_part: ELSE expression THEN statements
 	{
 		/* else exists */
 		$$ = $2;
 	}
-| /* empty */ 
+| /* empty */
 	{
 		/* no else */
 		$$ = NULL;
 	}
-; 
+;
+
+
 
 while_statement: WHILE expression LOOP statements END LOOP SEMI
 {
 	$$ = new_ast_while_node($2, $4);
 }
+for_statement: FOR IDENT IN  INTCONST TWOPOINTS INTCONST LOOP statements END LOOP SEMI{
+	/* create increment node*/
+	AST_Node *incr_node, *asing_node, *exp_node, *constante, *constante_2, *constante_6;
+	incr_node = new_ast_incr_node($2.ival, 0, 0);
+	AST_Node_Ref *temp = (AST_Node_Ref*) $2;
+	constante = new_ast_const_node(INT_TYPE, $4.ival);
+	asing_node = new_ast_assign_node(temp->entry, temp->ref, constante);
+	constante_2 = new_ast_const_node(INT_TYPE, $2.ival);
+	constante_6 = new_ast_const_node(INT_TYPE, $6.ival);
+	exp_node =  new_ast_rel_node(1, constante_2, constante_6);
+
+	$$ = new_ast_for_node(asing_node, exp_node, incr_node, $8);
+	set_loop_counter($$);
+}
+| FOR IDENT IN REVERSE INTCONST TWOPOINTS INTCONST LOOP statements END LOOP SEMI{
+	/* create increment node*/
+	AST_Node *incr_node, *asing_node, *exp_node;
+	incr_node = new_ast_incr_node($2, 1, 0);
+
+	AST_Node_Ref *temp = (AST_Node_Ref*) $2;
+	asing_node = new_ast_assign_node(temp->entry, temp->ref,$7);
+	exp_node =  new_ast_rel_node(0, $2, $5);
+
+
+	$$ = new_ast_for_node(asing_node, exp_node, incr_node, $9);
+	set_loop_counter($$);
+}
+;
 
 put_statement: PUT LPAREN expression RPAREN SEMI
 ;
@@ -213,11 +243,11 @@ get_statement: GET LPAREN expression RPAREN SEMI
 new_line_statement: NEW_LINE SEMI
 ;
 
-expression: expression ADDOP expression 
-	{ 
+expression: expression ADDOP expression
+	{
 	    $$ = new_ast_arithm_node($2.ival, $1, $3);
 	}
-| expression MULOP expression 
+| expression MULOP expression
 	{
 	    $$ = new_ast_arithm_node(MUL, $1, $3);
 	}
@@ -246,11 +276,11 @@ expression: expression ADDOP expression
 	    $$ = new_ast_bool_node(NOT, $2, NULL);
 	}
 | LPAREN expression RPAREN
-	{ 
+	{
 		$$ = $2; /* just pass information */
 	}
 | var_ref
-	{ 
+	{
 		$$ = $1; /* just pass information */
 	}
 | sign constant
@@ -258,7 +288,7 @@ expression: expression ADDOP expression
 		/* sign */
 		if($1.ival == 1){
 			AST_Node_Const *temp = (AST_Node_Const*) $2;
-		
+
 			/* inverse value depending on the constant type */
 			switch(temp->const_type){
 				case INT_TYPE:
@@ -273,7 +303,7 @@ expression: expression ADDOP expression
 					exit(1);
 					break;
 			}
-			
+
 			$$ = (AST_Node*) temp;
 		}
 		/* no sign */
@@ -284,7 +314,7 @@ expression: expression ADDOP expression
 ;
 
 sign: ADDOP
-	{ 
+	{
 		/* plus sign error */
 		if($1.ival == ADD){
 			fprintf(stderr, "Error having plus as a sign!\n");
@@ -295,9 +325,9 @@ sign: ADDOP
 		}
 	}
 	| /* empty */
-	{ 
+	{
 		$$.ival = 0; /* no sign */
-	} 
+	}
 ;
 
 assigment: var_ref ASSIGN expression SEMI
@@ -325,7 +355,7 @@ void add_to_names(list_t *entry){
 	else{
 		nc++;
 		names = (list_t **) realloc(names, nc * sizeof(list_t *));
-		names[nc - 1] = entry;		
+		names[nc - 1] = entry;
 	}
 }
 
@@ -352,34 +382,34 @@ void yyerror ()
 }
 
 int main (int argc, char *argv[]){
-	
+
 	// initialize symbol table
 	init_hash_table();
-	
+
 	// initialize revisit queue
 	queue = NULL;
-	
+
 	// parsing
 	int flag;
 	yyin = fopen(argv[1], "r");
 	flag = yyparse();
 	fclose(yyin);
-	
+
 	printf("Parsing finished!\n");
-	
+
 	if(queue != NULL){
 		printf("Warning: Something has not been checked in the revisit queue!\n");
 	}
-	
+
 	// symbol table dump
 	yyout = fopen("symtab_dump.out", "w");
 	symtab_dump(yyout);
 	fclose(yyout);
-	
+
 	// revisit queue dump
 	yyout = fopen("revisit_dump.out", "w");
 	revisit_dump(yyout);
 	fclose(yyout);
-	
+
 	return flag;
 }
