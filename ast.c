@@ -106,40 +106,6 @@ AST_Node *new_ast_elsif_node(AST_Node *condition, AST_Node *elsif_branch){
 	return (struct AST_Node *) v;
 }
 
-AST_Node *new_ast_for_node(AST_Node *initialize, AST_Node *condition, AST_Node *increment, AST_Node *for_branch){
-	// allocate memory
-	AST_Node_For *v = malloc (sizeof (AST_Node_For));
-	
-	// set entries
-	v->type = FOR_NODE;
-	v->initialize = initialize;
-	v->condition = condition;
-	v->increment = increment;
-	v->for_branch = for_branch;
-	
-	// return type-casted result
-	return (struct AST_Node *) v;
-}
-
-void set_loop_counter(AST_Node *node){
-	/* type-cast to for node */
-	AST_Node_For *for_node = (AST_Node_For *) node;
-	
-	/* find the counter */
-	AST_Node_Assign *assign_node = (AST_Node_Assign *) for_node->initialize;
-	for_node->counter = assign_node->entry;
-	
-	/* check if the same one occurs in increment! */
-	AST_Node_Incr *incr_node = (AST_Node_Incr *) for_node->increment;
-	if( strcmp(incr_node->entry->st_name, assign_node->entry->st_name) ){
-		fprintf(stderr, "Variable used in init and incr of for are not the same!\n");
-		exit(1);
-	}	
-	
-	/* type-cast back to AST_Node */
-	node = (AST_Node *) for_node;
-}
-
 AST_Node *new_ast_while_node(AST_Node *condition, AST_Node *while_branch){
 	// allocate memory
 	AST_Node_While *v = malloc (sizeof (AST_Node_While));
@@ -174,34 +140,6 @@ AST_Node *new_ast_simple_node(int statement_type){
 	// set entries
 	v->type = SIMPLE_NODE;
 	v->statement_type = statement_type;
-	
-	// return type-casted result
-	return (struct AST_Node *) v;
-}
-						 
-AST_Node *new_ast_incr_node(list_t *entry, int incr_type, int pf_type){
-	// allocate memory
-	AST_Node_Incr *v = malloc (sizeof (AST_Node_Incr));
-	
-	// set entries
-	v->type = INCR_NODE;
-	v->entry = entry;
-	v->incr_type = incr_type;
-	v->pf_type = pf_type;
-	
-	// return type-casted result
-	return (struct AST_Node *) v;
-}
-
-AST_Node *new_ast_func_call_node(list_t *entry, AST_Node **params, int num_of_pars){
-	// allocate memory
-	AST_Node_Func_Call *v = malloc (sizeof (AST_Node_Func_Call));
-	
-	// set entries
-	v->type = FUNC_CALL;
-	v->entry = entry;
-	v->params = params;
-	v->num_of_pars = num_of_pars;
 	
 	// return type-casted result
 	return (struct AST_Node *) v;
@@ -278,34 +216,6 @@ AST_Node *new_ast_ref_node(list_t *entry, int ref){
 	return (struct AST_Node *) v;	
 }
 
-/* Functions */
-
-AST_Node *new_ast_func_decl_node(int ret_type, list_t *entry){
-	// allocate memory
-	AST_Node_Func_Decl *v = malloc (sizeof (AST_Node_Func_Decl));
-	
-	// set entries
-	v->type = FUNC_DECL;
-	v->ret_type = ret_type;
-	v->entry = entry;
-	
-	// return type-casted result
-	return (struct AST_Node *) v;
-}
-
-AST_Node *new_ast_return_node(int ret_type, AST_Node *ret_val){
-	// allocate memory
-	AST_Node_Return *v = malloc (sizeof (AST_Node_Return));
-	
-	// set entries
-	v->type = FUNC_DECL;
-	v->ret_type = ret_type;
-	v->ret_val = ret_val;
-	
-	// return type-casted result
-	return (struct AST_Node *) v;
-}
-
 /* Tree Traversal */
 
 void ast_print_node(AST_Node *node){
@@ -314,10 +224,8 @@ void ast_print_node(AST_Node *node){
 	AST_Node_Const *temp_const;
 	AST_Node_Statements *temp_statements;
 	AST_Node_If *temp_if;
-	AST_Node_For *temp_for;
 	AST_Node_Assign *temp_assign;
 	AST_Node_Simple *temp_simple;
-	AST_Node_Incr *temp_incr;
 	AST_Node_Arithm *temp_arithm;
 	AST_Node_Bool *temp_bool;
 	AST_Node_Rel *temp_rel;
@@ -364,10 +272,8 @@ void ast_print_node(AST_Node *node){
 			break;
 		case ELSIF_NODE:
 			printf("Elsif Node\n");
-			break;
-		case FOR_NODE:
-			temp_for = (struct AST_Node_For *) node;
-			printf("For Node with loop counter %s\n", temp_for->counter->st_name);
+		case WHILE_NODE:
+			printf("While Node\n");
 			break;
 		case ASSIGN_NODE:
 			temp_assign = (struct AST_Node_Assign *) node;
@@ -376,11 +282,6 @@ void ast_print_node(AST_Node *node){
 		case SIMPLE_NODE:
 			temp_simple = (struct AST_Node_Simple *) node;
 			printf("Simple Node of statement %d\n", temp_simple->statement_type);
-			break;
-		case INCR_NODE:
-			temp_incr = (struct AST_Node_Incr *) node;
-			printf("Increment Node of entry %s being %d %d\n", 
-				temp_incr->entry->st_name, temp_incr->incr_type, temp_incr->pf_type);
 			break;
 		case ARITHM_NODE:
 			temp_arithm = (struct AST_Node_Arithm *) node;
@@ -461,19 +362,7 @@ void ast_traversal(AST_Node *node){
 		ast_traversal(temp_elsif->condition);
 		ast_traversal(temp_elsif->elsif_branch);
 	}
-	/* for case */
-	else if(node->type == FOR_NODE){
-		AST_Node_For *temp_for = (struct AST_Node_For *) node;
-		ast_print_node(node);
-		printf("Initialize:\n");
-		ast_traversal(temp_for->initialize);
-		printf("Condition:\n");
-		ast_traversal(temp_for->condition);
-		printf("Increment:\n");
-		ast_traversal(temp_for->increment);
-		printf("For branch:\n");
-		ast_traversal(temp_for->for_branch);
-	}
+	
 	/* while case */
 	else if(node->type == WHILE_NODE){
 		AST_Node_While *temp_while = (struct AST_Node_While *) node;
@@ -487,22 +376,6 @@ void ast_traversal(AST_Node *node){
 		ast_print_node(node);
 		printf("Assigning:\n");
 		ast_traversal(temp_assign->assign_val);
-	}
-	/* function call case */
-	else if(node->type == FUNC_CALL){
-		AST_Node_Func_Call *temp_func_call = (struct AST_Node_Func_Call *) node;
-		ast_print_node(node);
-		printf("Call parameters:\n");
-		for(i = 0; i < temp_func_call->num_of_pars; i++){
-			ast_traversal(temp_func_call->params[i]);
-		}
-	}
-	/* return case */
-	else if(node->type == RETURN_NODE){
-		AST_Node_Return *temp_return = (struct AST_Node_Return *) node;
-		ast_print_node(node);
-		printf("Returning:\n");
-		ast_traversal(temp_return->ret_val);
 	}
 	/* others */
 	else{

@@ -91,6 +91,7 @@ CHARCONST		(\'{PRINT}\')|(\'\\[nftrbv]\')
 "else"          { return ELSE; }
 "elsif"         { return ELSIF; }
 
+"while"           { return WHILE; }
 "for"           { return FOR; }
 "in"            { return IN; }
 "loop"          { return LOOP; }

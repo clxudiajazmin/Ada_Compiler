@@ -48,7 +48,7 @@
 %token<val> ASSIGN INI LPAREN RPAREN LBRACK RBRACK LBRACE RBRACE SEMI DOT COMMA CHANGE
 %token<val> TYPE RANGE OF ARRAY TWOPOINTS NEW RET
 %token<val> IF THEN ELSE ELSIF
-%token<val> FOR IN LOOP REVERSE
+%token<val> FOR IN LOOP REVERSE WHILE
 %token<val> PUT GET NEW_LINE 
 %token<symtab_item> IDENT 
 %token<val> INTCONST 
@@ -78,8 +78,7 @@
 %type <node> statement assigment
 %type <node> statements
 %type <node> if_statement elsif_part else_part
-%type <node> for_statement
-
+%type <node> while_statement
 
 %start program
 
@@ -153,7 +152,11 @@ statement: assigment
 		$$ = $1; /* just pass information */
 		ast_traversal($$); /* just for testing */
 	}
-| for_statement { $$ = $1; /* just pass information */ }
+| while_statement
+	{ 
+	$$ = $1; /* just pass information */
+	ast_traversal($$); /* just for testing */
+	}
 | put_statement { $$ = NULL; /* will do it later ! */ }
 | get_statement { $$ = NULL; /* will do it later ! */ }
 | new_line_statement { $$ = NULL; /* will do it later ! */ }
@@ -196,32 +199,10 @@ else_part: ELSE expression THEN statements
 	}
 ; 
 
-for_statement: FOR IDENT IN  INTCONST TWOPOINTS INTCONST LOOP statements END LOOP SEMI{
-    /* create increment node*/
-    AST_Node *incr_node;
-    incr_node = new_ast_incr_node($2, 0, 0);
-    AST_Node_Ref *temp = (AST_Node_Ref*) $2;
-    assigment = new_ast_assign_node(temp->entry, temp->ref,$4);
-    expresion =  new_ast_rel_node(1, $2, $6);
-
-
-    $$ = new_ast_for_node(assigment, expresion, incr_node, $8);
-    set_loop_counter($$);
+while_statement: WHILE expression LOOP statements END LOOP SEMI
+{
+	$$ = new_ast_while_node($2, $4);
 }
-| FOR IDENT IN REVERSE INTCONST TWOPOINTS INTCONST LOOP statements END LOOP SEMI{
-    /* create increment node*/
-    AST_Node *incr_node;
-    incr_node = new_ast_incr_node($2, 1, 0);
-
-    AST_Node_Ref *temp = (AST_Node_Ref*) $2;
-    assigment = new_ast_assign_node(temp->entry, temp->ref,$7);
-    expresion =  new_ast_rel_node(0, $2, $5);
-
-
-    $$ = new_ast_for_node(assigment, expresion, incr_node, $9);
-    set_loop_counter($$);
-}
-;
 
 put_statement: PUT LPAREN expression RPAREN SEMI
 ;

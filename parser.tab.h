@@ -92,14 +92,15 @@
      IN = 308,
      LOOP = 309,
      REVERSE = 310,
-     PUT = 311,
-     GET = 312,
-     NEW_LINE = 313,
-     IDENT = 314,
-     INTCONST = 315,
-     FLOATCONST = 316,
-     STRING = 317,
-     CHARCONST = 318
+     WHILE = 311,
+     PUT = 312,
+     GET = 313,
+     NEW_LINE = 314,
+     IDENT = 315,
+     INTCONST = 316,
+     FLOATCONST = 317,
+     STRING = 318,
+     CHARCONST = 319
    };
 #endif
 /* Tokens.  */
@@ -156,14 +157,15 @@
 #define IN 308
 #define LOOP 309
 #define REVERSE 310
-#define PUT 311
-#define GET 312
-#define NEW_LINE 313
-#define IDENT 314
-#define INTCONST 315
-#define FLOATCONST 316
-#define STRING 317
-#define CHARCONST 318
+#define WHILE 311
+#define PUT 312
+#define GET 313
+#define NEW_LINE 314
+#define IDENT 315
+#define INTCONST 316
+#define FLOATCONST 317
+#define STRING 318
+#define CHARCONST 319
 
 
 
@@ -185,7 +187,7 @@ typedef union YYSTYPE
 	
 }
 /* Line 1529 of yacc.c.  */
-#line 189 "parser.tab.h"
+#line 191 "parser.tab.h"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
