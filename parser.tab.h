@@ -184,10 +184,13 @@ typedef union YYSTYPE
 	// for declarations
 	int data_type;
 	int const_type;
+
+	// for parameters
+	Param par;
 	
 }
 /* Line 1529 of yacc.c.  */
-#line 191 "parser.tab.h"
+#line 194 "parser.tab.h"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1

@@ -1,10 +1,10 @@
 procedure Greet is
    a : Integer;
+   b: Float; 
 begin
    -- Print "Hello, World!" to the screen
-   a := 2;
-   while a < 6 loop
-      a := a + 1;
-   end loop;
+   a := 'u';
+   a:= b;
+   
    Put_Line("Hello, World!");
 end Greet;

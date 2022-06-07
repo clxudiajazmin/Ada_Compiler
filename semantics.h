@@ -3,6 +3,7 @@
 #define INT_TYPE 1
 #define REAL_TYPE 2
 #define CHAR_TYPE 3
+#define STR_TYPE 4
 
 /* operator types */
 #define NONE 0		// to check types only - assignment, parameter

@@ -36,6 +36,9 @@
 	// for declarations
 	int data_type;
 	int const_type;
+
+	// for parameters
+	Param par;
 	
 }
 
@@ -89,11 +92,18 @@ procedure: PROC IDENT IS declarations BEG statements END IDENT SEMI
 ;
 
 declarations: declarations declaration
+	{
+		AST_Node_Declarations *temp = (AST_Node_Declarations*) $1;
+		$$ = new_declarations_node(temp->declarations, temp->declaration_count, $2);
+	}
 |  declaration 
+	{
+		$$ = new_declarations_node(NULL, 0, $1);
+	}
 | /* empty */
 ;
 
-declaration: names  INI type SEMI
+declaration: names INI type SEMI
 {
 		int i;
 		$$ = new_ast_decl_node($3, names, nc);
@@ -111,8 +121,7 @@ declaration: names  INI type SEMI
 	}
 ;
 
-
-type: INT  		{ $$ = INT_TYPE;   }
+type: INT  		{ $$ = INT_TYPE;    }
 	| CHAR 		{ $$ = CHAR_TYPE;   }
 	| FLOAT 	{ $$ = REAL_TYPE;   }
 ;
@@ -304,6 +313,13 @@ assigment: var_ref ASSIGN expression SEMI
 {
 	AST_Node_Ref *temp = (AST_Node_Ref*) $1;
 	$$ = new_ast_assign_node(temp->entry, temp->ref, $3);
+
+	// check assignment semantics
+  	get_result_type(
+    	get_type(temp->entry->st_name), /* variable datatype */
+    	expression_data_type($3),       /* expression datatype */
+    	NONE  /* checking compatibility only (no operator) */
+  	);
 }
 ;
 
