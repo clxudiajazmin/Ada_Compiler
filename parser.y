@@ -2,7 +2,6 @@
 %{
 	#include "semantics.c"
 	#include "symtab.c"
-	#include "symtab.h"
 	#include "ast.h"
 	#include "ast.c"
 	#include <stdio.h>
@@ -49,7 +48,7 @@
 %token<val> ASSIGN INI LPAREN RPAREN LBRACK RBRACK LBRACE RBRACE SEMI DOT COMMA CHANGE
 %token<val> TYPE RANGE OF ARRAY TWOPOINTS NEW RET
 %token<val> IF THEN ELSE ELSIF
-%token<val> FOR IN LOOP
+%token<val> FOR IN LOOP REVERSE
 %token<val> PUT GET NEW_LINE 
 %token<symtab_item> IDENT 
 %token<val> INTCONST 
@@ -197,18 +196,30 @@ else_part: ELSE expression THEN statements
 	}
 ; 
 
-for_statement: FOR expression IN expression LOOP statements END LOOP SEMI{
-	/* create increment node*/
-	AST_Node *incr_node;
-	if($8.ival == INC){ /* increment */
-		incr_node = new_ast_incr_node($7, 0, 0);
-	}
-	else{
-		incr_node = new_ast_incr_node($7, 1, 0);
-	}
+for_statement: FOR IDENT IN  INTCONST TWOPOINTS INTCONST LOOP statements END LOOP SEMI{
+    /* create increment node*/
+    AST_Node *incr_node;
+    incr_node = new_ast_incr_node($2, 0, 0);
+    AST_Node_Ref *temp = (AST_Node_Ref*) $2;
+    assigment = new_ast_assign_node(temp->entry, temp->ref,$4);
+    expresion =  new_ast_rel_node(1, $2, $6);
 
-	$$ = new_ast_for_node($3, $5, incr_node, $10);
-	set_loop_counter($$);
+
+    $$ = new_ast_for_node(assigment, expresion, incr_node, $8);
+    set_loop_counter($$);
+}
+| FOR IDENT IN REVERSE INTCONST TWOPOINTS INTCONST LOOP statements END LOOP SEMI{
+    /* create increment node*/
+    AST_Node *incr_node;
+    incr_node = new_ast_incr_node($2, 1, 0);
+
+    AST_Node_Ref *temp = (AST_Node_Ref*) $2;
+    assigment = new_ast_assign_node(temp->entry, temp->ref,$7);
+    expresion =  new_ast_rel_node(0, $2, $5);
+
+
+    $$ = new_ast_for_node(assigment, expresion, incr_node, $9);
+    set_loop_counter($$);
 }
 ;
 

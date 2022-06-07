@@ -1,23 +1,24 @@
-
-/* A Bison parser, made by GNU Bison 2.4.1.  */
+/* A Bison parser, made by GNU Bison 2.3.  */
 
 /* Skeleton interface for Bison's Yacc-like parsers in C
-   
-      Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005, 2006
+
+   Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005, 2006
    Free Software Foundation, Inc.
-   
-   This program is free software: you can redistribute it and/or modify
+
+   This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-   
+   the Free Software Foundation; either version 2, or (at your option)
+   any later version.
+
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
-   
+
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
+   along with this program; if not, write to the Free Software
+   Foundation, Inc., 51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.  */
 
 /* As a special exception, you may create a larger work that contains
    part or all of the Bison parser skeleton and distribute that work
@@ -28,10 +29,9 @@
    special exception, which will cause the skeleton and the resulting
    Bison output files to be licensed under the GNU General Public
    License without this special exception.
-   
+
    This special exception was added by the Free Software Foundation in
    version 2.2 of Bison.  */
-
 
 /* Tokens.  */
 #ifndef YYTOKENTYPE
@@ -91,26 +91,87 @@
      FOR = 307,
      IN = 308,
      LOOP = 309,
-     PUT = 310,
-     GET = 311,
-     NEW_LINE = 312,
-     IDENT = 313,
-     INTCONST = 314,
-     FLOATCONST = 315,
-     STRING = 316,
-     CHARCONST = 317
+     REVERSE = 310,
+     PUT = 311,
+     GET = 312,
+     NEW_LINE = 313,
+     IDENT = 314,
+     INTCONST = 315,
+     FLOATCONST = 316,
+     STRING = 317,
+     CHARCONST = 318
    };
 #endif
+/* Tokens.  */
+#define CHAR 258
+#define STR 259
+#define INT 260
+#define FLOAT 261
+#define ADDOP 262
+#define MULOP 263
+#define DIVOP 264
+#define INCR 265
+#define OROP 266
+#define ANDOP 267
+#define NOTOP 268
+#define EQUOP 269
+#define RELOP 270
+#define FIRST 271
+#define LAST 272
+#define IMAGE 273
+#define VALUE 274
+#define MIN 275
+#define MAX 276
+#define PRED 277
+#define SUCC 278
+#define PROC 279
+#define IS 280
+#define BEG 281
+#define END 282
+#define SEPARADOR 283
+#define ASSIGN 284
+#define INI 285
+#define LPAREN 286
+#define RPAREN 287
+#define LBRACK 288
+#define RBRACK 289
+#define LBRACE 290
+#define RBRACE 291
+#define SEMI 292
+#define DOT 293
+#define COMMA 294
+#define CHANGE 295
+#define TYPE 296
+#define RANGE 297
+#define OF 298
+#define ARRAY 299
+#define TWOPOINTS 300
+#define NEW 301
+#define RET 302
+#define IF 303
+#define THEN 304
+#define ELSE 305
+#define ELSIF 306
+#define FOR 307
+#define IN 308
+#define LOOP 309
+#define REVERSE 310
+#define PUT 311
+#define GET 312
+#define NEW_LINE 313
+#define IDENT 314
+#define INTCONST 315
+#define FLOATCONST 316
+#define STRING 317
+#define CHARCONST 318
+
 
 
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
-{
-
-/* Line 1676 of yacc.c  */
 #line 28 "parser.y"
-
+{
 	// different types of values
 	Value val;   
 	
@@ -122,17 +183,14 @@ typedef union YYSTYPE
 	int data_type;
 	int const_type;
 	
-
-
-
-/* Line 1676 of yacc.c  */
-#line 130 "parser.tab.h"
-} YYSTYPE;
-# define YYSTYPE_IS_TRIVIAL 1
+}
+/* Line 1529 of yacc.c.  */
+#line 189 "parser.tab.h"
+	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
+# define YYSTYPE_IS_TRIVIAL 1
 #endif
 
 extern YYSTYPE yylval;
-
 

@@ -94,6 +94,7 @@ CHARCONST		(\'{PRINT}\')|(\'\\[nftrbv]\')
 "for"           { return FOR; }
 "in"            { return IN; }
 "loop"          { return LOOP; }
+"reverse"          { return REVERSE; }
 
 "Put_Line"		{ return PUT; }
 "Get_Line"		{ return GET; }

@@ -47,7 +47,7 @@ void insert(char *name, int len, int type, int lineno){
 			/* add to hashtable */
 			l->next = hash_table[hashval];
 			hash_table[hashval] = l; 
-			printf("Inserted %s for the first time with linenumber %d!\n", name, lineno);
+			// printf("Inserted %s for the first time with linenumber %d!\n", name, lineno);
 		}
 		else{
 			/* add it to check it again later */
@@ -60,7 +60,7 @@ void insert(char *name, int len, int type, int lineno){
 			l->lines->next = NULL;
 			l->next = hash_table[hashval];
 			hash_table[hashval] = l;
-			printf("Inserted %s at line %d to check it again later!\n", name, lineno);
+			// printf("Inserted %s at line %d to check it again later!\n", name, lineno);
 			
 			/* Adding identifier to the revisit queue! */
 			add_to_queue(l->st_name, PARAM_CHECK);
@@ -78,7 +78,7 @@ void insert(char *name, int len, int type, int lineno){
 			t->next = (RefList*) malloc(sizeof(RefList));
 			t->next->lineno = lineno;
 			t->next->next = NULL;
-			printf("Found %s again at line %d!\n", name, lineno);
+			// printf("Found %s again at line %d!\n", name, lineno);
 		}
 		/* new entry */
 		else{
@@ -101,7 +101,7 @@ void insert(char *name, int len, int type, int lineno){
 				/* add to hashtable */
 				l->next = hash_table[hashval];
 				hash_table[hashval] = l; 
-				printf("Inserted %s for a new scope with linenumber %d!\n", name, lineno);
+				// printf("Inserted %s for a new scope with linenumber %d!\n", name, lineno);
 			}	
 		}		
 	}
@@ -175,14 +175,14 @@ int get_type(char *name){ // get the type of an entry
 void hide_scope(){ /* hide the current scope */
 	list_t *l;
 	int i;
-	printf("Hiding scope \'%d\':\n", cur_scope);
+	// printf("Hiding scope \'%d\':\n", cur_scope);
 	/* for all the lists */
 	for (i = 0; i < SIZE; i++){
 		if(hash_table[i] != NULL){
 			l = hash_table[i];
 			/* Find the first item that is from another scope */
 			while(l != NULL && l->scope == cur_scope){
-				printf("Hiding %s..\n", l->st_name);
+				// printf("Hiding %s..\n", l->st_name);
 				l = l->next;
 			}
 			/* Set the list equal to that item */
@@ -194,6 +194,71 @@ void hide_scope(){ /* hide the current scope */
 
 void incr_scope(){ /* go to next scope */
 	cur_scope++;
+}
+
+// Function Declaration and Parameters
+
+Param def_param(int par_type, char *param_name, int passing){ // define parameter
+	Param param; /* Parameter struct */
+	
+	/* set the information */
+	param.par_type = par_type;
+	strcpy(param.param_name, param_name);
+	param.passing = passing;
+	
+	/* return the structure */
+	return param;
+}
+
+int func_declare(char *name, int ret_type, int num_of_pars, Param *parameters){ // declare function
+	/* lookup entry */
+	list_t *l = lookup(name);
+	
+	/* if type is not defined yet */
+	if(l->st_type != UNDEF){
+		
+		/* return type is ret_type */
+		l->inf_type = ret_type;
+		
+		/* parameter stuff */
+		l->num_of_pars = num_of_pars;
+		l->parameters = parameters;
+		
+		return 0; /* success */
+	}
+	/* already declared error */
+	else{
+		fprintf(stderr, "Function %s already declared!\n", name);
+		exit(1);
+	}
+}
+
+int func_param_check(char *name, int num_of_pars, Param *parameters){ // check parameters
+	int i, type_1, type_2;
+	
+	/* lookup entry */
+	list_t *l = lookup(name);
+	
+	/* check number of parameters */
+	if(l->num_of_pars != num_of_pars){
+		fprintf(stderr, "Function call of %s has wrong num of parameters!\n", name);
+		exit(1);
+	}
+	
+	/* check if parameters are compatible */
+	for(i = 0; i < num_of_pars; i++){
+		/* type of parameter in function declaration */
+		type_1 = l->parameters[i].par_type; 
+		
+		/* type of parameter in function call*/
+		type_2 = parameters[i].par_type; 
+		
+		/* check compatibility for function call */
+		get_result_type(type_1, type_2, NONE);
+		/* error occurs automatically in the function */
+	}
+	
+	return 0; /* success */
 }
 
 // Revisit Queue Functions

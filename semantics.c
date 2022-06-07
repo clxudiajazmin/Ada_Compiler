@@ -44,7 +44,7 @@ int get_result_type(int type_1, int type_2, int op_type){ /* type check and resu
 			// first type INT
 			if(type_1 == INT_TYPE){
 				// second type INT or CHAR
-				if(type_2 == INT_TYPE){
+				if(type_2 == INT_TYPE || type_2 == CHAR_TYPE){
 					return INT_TYPE;
 				}
 				// second type REAL
@@ -58,7 +58,7 @@ int get_result_type(int type_1, int type_2, int op_type){ /* type check and resu
 			// first type REAL
 			else if(type_1 == REAL_TYPE){
 				// second type INT, REAL or CHAR
-				if(type_2 == INT_TYPE || type_2 == REAL_TYPE){
+				if(type_2 == INT_TYPE || type_2 == REAL_TYPE || type_2 == CHAR_TYPE){
 					return REAL_TYPE;
 				}
 				else{
@@ -68,7 +68,7 @@ int get_result_type(int type_1, int type_2, int op_type){ /* type check and resu
 			// first type CHAR
 			else if(type_1 == CHAR_TYPE){
 				// second type INT or CHAR
-				if(type_2 == INT_TYPE){
+				if(type_2 == INT_TYPE || type_2 == CHAR_TYPE){
 					return CHAR_TYPE;
 				}
 				// second type REAL
@@ -78,6 +78,24 @@ int get_result_type(int type_1, int type_2, int op_type){ /* type check and resu
 				else{
 					type_error(type_1, type_2, op_type);
 				}
+			}
+			else{
+				type_error(type_1, type_2, op_type);
+			}
+			break;
+		/* ---------------------------------------------------------- */
+		case INCR_OP: /* special case of INCR */
+			// type INT
+			if(type_1 == INT_TYPE){
+				return INT_TYPE;
+			}
+			// type REAL
+			else if(type_1 == REAL_TYPE){
+				return REAL_TYPE;
+			}
+			// type CHAR
+			else if(type_1 == CHAR_TYPE){
+				return CHAR_TYPE;
 			}
 			else{
 				type_error(type_1, type_2, op_type);

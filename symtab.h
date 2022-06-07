@@ -99,6 +99,11 @@ int get_type(char *name); // get the type of an entry
 void hide_scope(); // hide the current scope
 void incr_scope(); // go to next scope
 
+// Function Declaration and Parameters
+Param def_param(int par_type, char *param_name, int passing); // define parameter
+int func_declare(char *name, int ret_type, int num_of_pars, Param *parameters); // declare function
+int func_param_check(char *name, int num_of_pars, Param *parameters); // check parameters
+
 // Revisit Queue Functions
 void add_to_queue(char *name, int type); // add to queue
 int revisit(char *name); // revisit entry by also removing it from queue
