@@ -108,8 +108,9 @@ CHARCONST		(\'{PRINT}\')|(\'\\[nftrbv]\')
 				}
 {INTCONST} 		{ yylval.val.ival = atoi(yytext); return INTCONST; }
 {FLOATCONST} 	{ yylval.val.fval = atof(yytext); return FLOATCONST; }
-{STRING} 		{ yylval.val.sval = malloc(yyleng * sizeof(char));
-				   strcpy(yylval.val.sval, yytext);  return STRING;
+{STRING} 		{ add_to_str_messages(yytext);
+				  yylval.val.sval = malloc(yyleng * sizeof(char));
+				  strcpy(yylval.val.sval, yytext);  return STRING;
 				}
 {CHARCONST}		{ yylval.val.cval = yytext[1];    return CHARCONST; }
 

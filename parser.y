@@ -4,6 +4,7 @@
 	#include "symtab.c"
 	#include "ast.h"
 	#include "ast.c"
+	#include "mips.h"
 	#include <stdio.h>
 	#include <stdlib.h>
 	#include <string.h>
@@ -399,5 +400,7 @@ int main (int argc, char *argv[]){
 	revisit_dump(yyout);
 	fclose(yyout);
 	
+	//added on mips
+	generate_code();
 	return flag;
 }

@@ -82,7 +82,7 @@ typedef struct revisit_queue{
 /* static structures */
 static list_t **hash_table;
 static revisit_queue *queue;
-
+static char **str_messages; 
 
 // Symbol Table Functions
 void init_hash_table(); // initialize hash table
@@ -108,3 +108,7 @@ int func_param_check(char *name, int num_of_pars, Param *parameters); // check p
 void add_to_queue(char *name, int type); // add to queue
 int revisit(char *name); // revisit entry by also removing it from queue
 void revisit_dump(FILE *of); // dump file
+
+
+//string messages for mips
+void add_to_str_messages(char *str);
