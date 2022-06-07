@@ -207,21 +207,18 @@ while_statement: WHILE expression LOOP statements END LOOP SEMI
 {
 	$$ = new_ast_while_node($2, $4);
 }
-for_statement: FOR IDENT IN  INTCONST TWOPOINTS INTCONST LOOP statements END LOOP SEMI{
+for_statement: FOR IDENT IN  constant TWOPOINTS constant LOOP statements END LOOP SEMI{
 	/* create increment node*/
-	AST_Node *incr_node, *asing_node, *exp_node, *constante, *constante_2, *constante_6;
+	AST_Node *incr_node, *asing_node, *exp_node;
 	incr_node = new_ast_incr_node($2, 0, 0);
 	AST_Node_Ref *temp = (AST_Node_Ref*) $2;
-	constante = new_ast_const_node(INT_TYPE, $4.ival);
-	asing_node = new_ast_assign_node(temp->entry, temp->ref, constante);
-	constante_2 = new_ast_const_node(INT_TYPE, $2.ival);
-	constante_6 = new_ast_const_node(INT_TYPE, $6.ival);
-	exp_node =  new_ast_rel_node(1, constante_2, constante_6);
+	asing_node = new_ast_assign_node(temp->entry, temp->ref, $4);
+	exp_node =  new_ast_rel_node(1, $2, $6);
 
 	$$ = new_ast_for_node(asing_node, exp_node, incr_node, $8);
 	set_loop_counter($$);
 }
-| FOR IDENT IN REVERSE INTCONST TWOPOINTS INTCONST LOOP statements END LOOP SEMI{
+| FOR IDENT IN REVERSE constant TWOPOINTS constant LOOP statements END LOOP SEMI{
 	/* create increment node*/
 	AST_Node *incr_node, *asing_node, *exp_node;
 	incr_node = new_ast_incr_node($2, 1, 0);
