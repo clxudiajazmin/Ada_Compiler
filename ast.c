@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "ast.h"
+#include "symtab.h"
+#include "semantics.h"
 
 /* ------------------AST NODE MANAGEMENT-------------------- */
 /* The basic node */
@@ -32,7 +35,19 @@ AST_Node *new_ast_decl_node(int data_type, list_t **names, int names_count){
 	// return type-casted result
 	return (struct AST_Node *) v;
 }
-
+AST_Node *new_ast_incr_node(list_t *entry, int incr_type, int pf_type){
+	// allocate memory
+	AST_Node_Incr *v = malloc (sizeof (AST_Node_Incr));
+	
+	// set entries
+	v->type = INCR_NODE;
+	v->entry = entry;
+	v->incr_type = incr_type;
+	v->pf_type = pf_type;
+	
+	// return type-casted result
+	return (struct AST_Node *) v;
+}
 AST_Node *new_ast_const_node(int const_type, Value val){
 	// allocate memory
 	AST_Node_Const *v = malloc (sizeof (AST_Node_Const));
@@ -119,6 +134,24 @@ AST_Node *new_ast_for_node(AST_Node *initialize, AST_Node *condition, AST_Node *
 	
 	// return type-casted result
 	return (struct AST_Node *) v;
+}
+void set_loop_counter(AST_Node *node){
+  /* type-cast to for node */
+  AST_Node_For *for_node = (AST_Node_For *) node;
+
+  /* find the counter */
+  AST_Node_Assign *assign_node = (AST_Node_Assign *) for_node->initialize;
+  for_node->counter = assign_node->entry;
+
+  /* check if the same one occurs in increment! */
+  AST_Node_Incr *incr_node = (AST_Node_Incr *) for_node->increment;
+  if( strcmp(incr_node->entry->st_name, assign_node->entry->st_name) ){
+    fprintf(stderr, "Variable used in init and incr of for are not the same!\n");
+    exit(1);
+  }
+
+  /* type-cast back to AST_Node */
+  node = (AST_Node *) for_node;
 }
 
 
@@ -375,7 +408,8 @@ void ast_traversal(AST_Node *node){
 		printf("Increment:\n");
 		ast_traversal(temp_for->increment);
 		printf("For branch:\n");
-		ast_traversal(temp_for->for_branch);
+		ast_traversal(temp_for->for_branch);	
+
 	}
 	/* assign case */
 	else if(node->type == ASSIGN_NODE){

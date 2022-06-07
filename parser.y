@@ -2,6 +2,7 @@
 %{
 	#include "semantics.c"
 	#include "symtab.c"
+	#include "symtab.h"
 	#include "ast.h"
 	#include "ast.c"
 	#include <stdio.h>
@@ -57,13 +58,18 @@
 %token<val> CHARCONST
 
 
-%left LPAREN RPAREN LBRACK RBRACK
-%left MULOP DIVOP
-%left ADDOP
-%right ASSIGN
 %left COMMA
+%right ASSIGN
+%left OROP
+%left ANDOP
+%left EQUOP
+%left RELOP
+%left ADDOP
+%left MULOP DIVOP
+%right NOTOP INCR
+%left LPAREN RPAREN LBRACK RBRACK 
 
-%type <node> procedure
+%type <node> program
 %type <node> declarations declaration
 %type <data_type> type
 %type <symtab_item> name
@@ -73,12 +79,13 @@
 %type <node> statement assigment
 %type <node> statements
 %type <node> if_statement elsif_part else_part
+%type <node> for_statement
 
 
-%start procedure
+%start program
 
 %%
-
+program:procedure;
 
 procedure: PROC IDENT IS declarations BEG statements END IDENT SEMI
 ;
@@ -147,7 +154,7 @@ statement: assigment
 		$$ = $1; /* just pass information */
 		ast_traversal($$); /* just for testing */
 	}
-| loop_statement { $$ = NULL; /* will do it later ! */ }
+| for_statement { $$ = $1; /* just pass information */ }
 | put_statement { $$ = NULL; /* will do it later ! */ }
 | get_statement { $$ = NULL; /* will do it later ! */ }
 | new_line_statement { $$ = NULL; /* will do it later ! */ }
@@ -190,7 +197,20 @@ else_part: ELSE expression THEN statements
 	}
 ; 
 
-loop_statement: FOR expression IN expression LOOP statements END LOOP SEMI;
+for_statement: FOR expression IN expression LOOP statements END LOOP SEMI{
+	/* create increment node*/
+	AST_Node *incr_node;
+	if($8.ival == INC){ /* increment */
+		incr_node = new_ast_incr_node($7, 0, 0);
+	}
+	else{
+		incr_node = new_ast_incr_node($7, 1, 0);
+	}
+
+	$$ = new_ast_for_node($3, $5, incr_node, $10);
+	set_loop_counter($$);
+}
+;
 
 put_statement: PUT LPAREN expression RPAREN SEMI
 ;

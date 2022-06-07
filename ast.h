@@ -12,6 +12,7 @@ typedef enum Node_Type {
 	FOR_NODE,    // for statement
 	ASSIGN_NODE, // assigment
 	SIMPLE_NODE, // continue or break statement
+	INCR_NODE,   // increment statement (non-expression one)
 	// expressions
 	ARITHM_NODE, // arithmetic expression
 	BOOL_NODE,   // boolean expression
@@ -128,6 +129,9 @@ typedef struct AST_Node_For{
 	
 	// branch
 	struct AST_Node *for_branch;
+
+	//loop counter 
+	list_t *counter; 
 }AST_Node_For;
 
 typedef struct AST_Node_Assign{
@@ -149,6 +153,18 @@ typedef struct AST_Node_Simple{
 	// continue: '0', break: '1'
 	int statement_type;
 }AST_Node_Simple;
+typedef struct AST_Node_Incr{
+	enum Node_Type type; // node type
+	
+	// identifier
+	list_t *entry;
+	
+	// increment or decrement
+	int incr_type; // 0: increment, 1: decrement
+	
+	// post- or prefix
+	int pf_type; // 0: postfix, 1: prefix
+}AST_Node_Incr;
 
 /* Expressions */
 typedef struct AST_Node_Arithm{
@@ -216,6 +232,8 @@ AST_Node *new_ast_if_node(AST_Node *condition, AST_Node *if_branch, AST_Node **e
 	int elseif_count, AST_Node *else_branch);
 AST_Node *new_ast_elsif_node(AST_Node *condition, AST_Node *elsif_branch);
 AST_Node *new_ast_for_node(AST_Node *initialize, AST_Node *condition, AST_Node *increment, AST_Node *for_branch);
+void set_loop_counter(AST_Node *node); //for the for node 
+AST_Node *new_ast_incr_node(list_t *entry, int incr_type, int pf_type);      // increment decrement
 AST_Node *new_ast_assign_node(list_t *entry, int ref, AST_Node *assign_val);
 AST_Node *new_ast_simple_node(int statement_type);							 // continue or break
 

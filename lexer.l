@@ -1,5 +1,3 @@
-
-   
 %option noyywrap
 
 %{
@@ -26,8 +24,6 @@ INTCONST    	[+-]?{DIGITO}+
 FLOATCONST  	[-+]?{DIGITO}+(.{DIGITO}+)?((E|e)[-+]?{DIGITO}+)?
 STRING			\"{PRINT}*\"
 CHARCONST		(\'{PRINT}\')|(\'\\[nftrbv]\')
-	
-
 %%
 
 "--".*			{ printf("Comentario en linea %d\n", lineno); } 
