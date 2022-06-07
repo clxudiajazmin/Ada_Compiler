@@ -516,3 +516,48 @@ void ast_traversal(AST_Node *node){
 		ast_print_node(node);
 	}
 }
+
+int getGraphIndex(AST_Node *node){
+    /* temp nodes */
+    AST_Node_Arithm *temp_arithm;
+    AST_Node_Incr *temp_incr;
+    AST_Node_Bool *temp_bool;
+    AST_Node_Rel *temp_rel;
+    AST_Node_Equ *temp_equ;
+    AST_Node_Ref *temp_ref;
+
+    /* return type depends on the AST node type */
+    switch(node->type){
+        case ARITHM_NODE: /* arithmetic expression */
+            temp_arithm = (AST_Node_Arithm *) node;
+
+            return temp_arithm->g_index; 
+            break;
+        case BOOL_NODE:   /* boolean expression */
+            temp_bool = (AST_Node_Bool *) node;
+
+            return temp_bool->g_index;
+            break;
+        case REL_NODE:    /* relational expression */
+            temp_rel = (AST_Node_Rel *) node;
+
+            return temp_rel->g_index;
+            break;
+        case EQU_NODE:    /* equality expression */
+            temp_equ = (AST_Node_Equ *) node;
+
+            return temp_equ->g_index;
+            break;
+        case REF_NODE:    /* identifier reference */
+            temp_ref = (AST_Node_Ref *) node;
+
+            return temp_ref->entry->g_index;
+            break;
+        case CONST_NODE:  /* constant */
+            return -1;
+            break;
+        default: /* wrong choice case */
+            fprintf(stderr, "Error in node selection!\n");
+            exit(1);
+    }
+}

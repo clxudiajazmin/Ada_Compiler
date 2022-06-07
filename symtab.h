@@ -44,6 +44,10 @@ typedef struct list_t{
 	// to store value
 	Value val;
 	
+	//register assignment stuff 
+	int g_index;
+	int reg_name;
+    
 	// type
     int st_type;
     

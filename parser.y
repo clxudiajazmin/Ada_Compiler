@@ -72,7 +72,7 @@
 %right NOTOP INCR
 %left LPAREN RPAREN LBRACK RBRACK 
 
-/* %type <node> procedure */
+%type <node> procedure
 %type <node> declarations declaration
 %type <data_type> type
 %type <symtab_item> name
@@ -88,8 +88,16 @@
 
 %%
 
+/* procedure: PROC IDENT IS declarations BEG statements END IDENT SEMI */
+/* ; */
+
+//esta parte ni putisima idea de para que es o porque la hace, en teoria lo de proc ident is declarations... no deberia ni estar lmfao
 procedure: PROC IDENT IS declarations BEG statements END IDENT SEMI
+	declarations { main_decl_tree = $1; ast_traversal($1); }
+	statements   { main_func_tree = $3; ast_traversal($3); }
 ;
+
+
 
 declarations: declarations declaration
 	{

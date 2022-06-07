@@ -247,3 +247,13 @@ int expression_data_type(AST_Node *node);                                    // 
 /* Tree Traversal */
 void ast_print_node(AST_Node *node);	// print information of node
 void ast_traversal(AST_Node *node);		// tree traversal (for testing right now)
+
+
+static AST_Node* main_decl_tree; /* main function's declarations AST Tree */
+static AST_Node* main_func_tree; /* main function's statements AST Tree */
+static AST_Node* opt_func_tree; /* optional functions AST Tree */
+
+
+
+
+int getGraphIndex(AST_Node *node);
