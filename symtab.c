@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "semantics.h"
-#include "symtab.h"
+#include "symtab.h" 
 
 /* current scope */
 int cur_scope = 0;

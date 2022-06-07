@@ -4,7 +4,6 @@
 	#include "symtab.c"
 	#include "ast.h"
 	#include "ast.c"
-	#include "mips.h"
 	#include "mips.c"
 	#include <stdio.h>
 	#include <stdlib.h>

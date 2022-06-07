@@ -2,8 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "mips.h"
-#include "semantics.h"
-#include "symtab.c"
 
 
 void generate_code()
