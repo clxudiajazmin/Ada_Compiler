@@ -6,6 +6,7 @@ begin
    B := A;
 
    if A = 5 then
-      Put_Line ('RESULT IS 0');
+      A := 9;
+      Put_Line("Hola mundo");
    end if;
 end Hello;

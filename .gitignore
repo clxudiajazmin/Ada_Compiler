@@ -1,3 +1,6 @@
 
 parser.tab.c
 parser.tab.h
+revisit_dump.out
+symtab_dump.put
+lex.yy.c

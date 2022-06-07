@@ -71,7 +71,7 @@
 %right NOTOP INCR
 %left LPAREN RPAREN LBRACK RBRACK 
 
-%type <node> program
+/* %type <node> procedure */
 %type <node> declarations declaration
 %type <data_type> type
 %type <symtab_item> name
@@ -83,10 +83,9 @@
 %type <node> if_statement elsif_part else_part
 %type <node> while_statement
 
-%start program
+%start procedure
 
 %%
-program:procedure;
 
 procedure: PROC IDENT IS declarations BEG statements END IDENT SEMI
 ;
@@ -136,7 +135,6 @@ name: IDENT { $$ = $1; }
 
 constant: INTCONST 	{ $$ = new_ast_const_node(INT_TYPE, $1);  }
 | FLOATCONST		{ $$ = new_ast_const_node(REAL_TYPE, $1);  }
-| STRING			{ $$ = new_ast_const_node(CHAR_TYPE, $1);  }
 | CHARCONST			{ $$ = new_ast_const_node(CHAR_TYPE, $1);  }
 ;
 
@@ -289,6 +287,10 @@ expression: expression ADDOP expression
 		else{
 			$$ = $2;
 		}
+	}
+| STRING
+	{
+		AST_Node *temp = new_ast_const_node(STR_TYPE, $1);
 	}
 ;
 
