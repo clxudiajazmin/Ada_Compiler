@@ -33,6 +33,21 @@ AST_Node *new_ast_decl_node(int data_type, list_t **names, int names_count){
 	return (struct AST_Node *) v;
 }
 
+
+AST_Node *new_ast_incr_node(list_t *entry, int incr_type, int pf_type){
+	// allocate memory
+	AST_Node_Incr *v = malloc (sizeof (AST_Node_Incr));
+	
+	// set entries
+	v->type = INCR_NODE;
+	v->entry = entry;
+	v->incr_type = incr_type;
+	v->pf_type = pf_type;
+	
+	// return type-casted result
+	return (struct AST_Node *) v;
+}
+
 AST_Node *new_ast_const_node(int const_type, Value val){
 	// allocate memory
 	AST_Node_Const *v = malloc (sizeof (AST_Node_Const));
@@ -117,6 +132,40 @@ AST_Node *new_ast_while_node(AST_Node *condition, AST_Node *while_branch){
 	
 	// return type-casted result
 	return (struct AST_Node *) v;
+}
+
+
+AST_Node *new_ast_for_node(AST_Node *initialize, AST_Node *condition, AST_Node *increment, AST_Node *for_branch){
+	// allocate memory
+	AST_Node_For *v = malloc (sizeof (AST_Node_For));
+	
+	// set entries
+	v->type = FOR_NODE;
+	v->initialize = initialize;
+	v->condition = condition;
+	v->increment = increment;
+	v->for_branch = for_branch;
+	
+	// return type-casted result
+	return (struct AST_Node *) v;
+}
+void set_loop_counter(AST_Node *node){
+  /* type-cast to for node */
+  AST_Node_For *for_node = (AST_Node_For *) node;
+
+  /* find the counter */
+  AST_Node_Assign *assign_node = (AST_Node_Assign *) for_node->initialize;
+  for_node->counter = assign_node->entry;
+
+  /* check if the same one occurs in increment! */
+  AST_Node_Incr *incr_node = (AST_Node_Incr *) for_node->increment;
+  if( strcmp(incr_node->entry->st_name, assign_node->entry->st_name) ){
+    fprintf(stderr, "Variable used in init and incr of for are not the same!\n");
+    exit(1);
+  }
+
+  /* type-cast back to AST_Node */
+  node = (AST_Node *) for_node;
 }
 
 AST_Node *new_ast_assign_node(list_t *entry, int ref, AST_Node *assign_val){

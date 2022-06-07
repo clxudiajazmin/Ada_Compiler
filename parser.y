@@ -74,6 +74,7 @@
 %type <symtab_item> name
 %type <node> constant
 %type <node> expression var_ref
+%type <node> for_statement
 %type <val> sign
 %type <node> statement assigment
 %type <node> statements
@@ -157,6 +158,7 @@ statement: assigment
 	$$ = $1; /* just pass information */
 	ast_traversal($$); /* just for testing */
 	}
+| for_statement { $$ = $1; /* will do it later ! */ }
 | put_statement { $$ = NULL; /* will do it later ! */ }
 | get_statement { $$ = NULL; /* will do it later ! */ }
 | new_line_statement { $$ = NULL; /* will do it later ! */ }
@@ -208,7 +210,7 @@ while_statement: WHILE expression LOOP statements END LOOP SEMI
 for_statement: FOR IDENT IN  INTCONST TWOPOINTS INTCONST LOOP statements END LOOP SEMI{
 	/* create increment node*/
 	AST_Node *incr_node, *asing_node, *exp_node, *constante, *constante_2, *constante_6;
-	incr_node = new_ast_incr_node($2.ival, 0, 0);
+	incr_node = new_ast_incr_node($2, 0, 0);
 	AST_Node_Ref *temp = (AST_Node_Ref*) $2;
 	constante = new_ast_const_node(INT_TYPE, $4.ival);
 	asing_node = new_ast_assign_node(temp->entry, temp->ref, constante);

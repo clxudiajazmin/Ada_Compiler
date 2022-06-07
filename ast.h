@@ -5,6 +5,7 @@ typedef enum Node_Type {
 	// declarations
 	DECL_NODE,   // declaration
 	CONST_NODE,  // constant
+	INCR_NODE,   // increment statement (non-expression one)
 	// statements
 	STATEMENTS,  // statements
 	IF_NODE,     // if statement
@@ -12,6 +13,7 @@ typedef enum Node_Type {
 	WHILE_NODE,  // while statement
 	ASSIGN_NODE, // assigment
 	SIMPLE_NODE, // continue or break statement
+	FOR_NODE, 	 // for statement
 	// expressions
 	ARITHM_NODE, // arithmetic expression
 	BOOL_NODE,   // boolean expression
@@ -114,6 +116,24 @@ typedef struct AST_Node_Elsif{
 	struct AST_Node *elsif_branch;
 }AST_Node_Elsif;
 
+typedef struct AST_Node_For{
+	enum Node_Type type; // node type
+	
+	// initialization
+	struct AST_Node *initialize;
+	
+	// condition
+	struct AST_Node *condition;
+	
+	// incrementation
+	struct AST_Node *increment;
+	
+	// branch
+	struct AST_Node *for_branch;
+
+	//loop counter 
+	list_t *counter; 
+}AST_Node_For;
 
 typedef struct AST_Node_While{
 	enum Node_Type type; // node type
@@ -144,6 +164,18 @@ typedef struct AST_Node_Simple{
 	// continue: '0', break: '1'
 	int statement_type;
 }AST_Node_Simple;
+typedef struct AST_Node_Incr{
+	enum Node_Type type; // node type
+	
+	// identifier
+	list_t *entry;
+	
+	// increment or decrement
+	int incr_type; // 0: increment, 1: decrement
+	
+	// post- or prefix
+	int pf_type; // 0: postfix, 1: prefix
+}AST_Node_Incr;
 
 /* Expressions */
 typedef struct AST_Node_Arithm{
@@ -213,6 +245,9 @@ AST_Node *new_ast_elsif_node(AST_Node *condition, AST_Node *elsif_branch);
 AST_Node *new_ast_while_node(AST_Node *condition, AST_Node *while_branch);
 AST_Node *new_ast_assign_node(list_t *entry, int ref, AST_Node *assign_val);
 AST_Node *new_ast_simple_node(int statement_type);							 // continue or break
+AST_Node *new_ast_for_node(AST_Node *initialize, AST_Node *condition, AST_Node *increment, AST_Node *for_branch);
+void set_loop_counter(AST_Node *node); //for the for node 
+AST_Node *new_ast_incr_node(list_t *entry, int incr_type, int pf_type);      // increment decrement
 
 /* Expressions */
 AST_Node *new_ast_arithm_node(enum Arithm_op op, AST_Node *left, AST_Node *right);
