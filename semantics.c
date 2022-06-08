@@ -23,7 +23,7 @@ int get_result_type(int type_1, int type_2, int op_type){ /* type check and resu
 			// first type REAL
 			else if(type_1 == REAL_TYPE){
 				// second type INT, REAL or CHAR
-				if(type_2 == INT_TYPE || type_2 == REAL_TYPE || type_2 == CHAR_TYPE){
+				if(type_2 == REAL_TYPE){
 					return 1;
 				}
 				else{
@@ -48,10 +48,6 @@ int get_result_type(int type_1, int type_2, int op_type){ /* type check and resu
 				// second type INT or CHAR
 				if(type_2 == INT_TYPE || type_2 == CHAR_TYPE){
 					return INT_TYPE;
-				}
-				// second type REAL
-				else if(type_2 == REAL_TYPE){
-					return REAL_TYPE;
 				}
 				else{
 					type_error(type_1, type_2, op_type);
@@ -80,24 +76,6 @@ int get_result_type(int type_1, int type_2, int op_type){ /* type check and resu
 				else{
 					type_error(type_1, type_2, op_type);
 				}
-			}
-			else{
-				type_error(type_1, type_2, op_type);
-			}
-			break;
-		/* ---------------------------------------------------------- */
-		case INCR_OP: /* special case of INCR */
-			// type INT
-			if(type_1 == INT_TYPE){
-				return INT_TYPE;
-			}
-			// type REAL
-			else if(type_1 == REAL_TYPE){
-				return REAL_TYPE;
-			}
-			// type CHAR
-			else if(type_1 == CHAR_TYPE){
-				return CHAR_TYPE;
 			}
 			else{
 				type_error(type_1, type_2, op_type);
@@ -148,7 +126,7 @@ int get_result_type(int type_1, int type_2, int op_type){ /* type check and resu
 			// first type INT
 			if(type_1 == INT_TYPE){
 				// second type INT, REAL or CHAR
-				if(type_2 == INT_TYPE || type_2 == REAL_TYPE || type_2 == CHAR_TYPE){
+				if(type_2 == INT_TYPE ){
 					return INT_TYPE;
 				}
 				else{
@@ -157,8 +135,8 @@ int get_result_type(int type_1, int type_2, int op_type){ /* type check and resu
 			}
 			else if(type_1 == REAL_TYPE){
 				// second type INT, REAL or CHAR
-				if(type_2 == INT_TYPE || type_2 == REAL_TYPE || type_2 == CHAR_TYPE){
-					return INT_TYPE;
+				if(type_2 == REAL_TYPE){
+					return REAL_TYPE;
 				}
 				else{
 					type_error(type_1, type_2, op_type);
@@ -167,8 +145,8 @@ int get_result_type(int type_1, int type_2, int op_type){ /* type check and resu
 			// first type CHAR
 			else if(type_1 == CHAR_TYPE){
 				// second type INT, REAL or CHAR
-				if(type_2 == INT_TYPE || type_2 == REAL_TYPE || type_2 == CHAR_TYPE){
-					return INT_TYPE;
+				if(type_2 == CHAR_TYPE){
+					return CHAR_TYPE;
 				}
 				else{
 					type_error(type_1, type_2, op_type);
@@ -193,7 +171,7 @@ int get_result_type(int type_1, int type_2, int op_type){ /* type check and resu
 			else if(type_1 == REAL_TYPE){
 				// second type REAL
 				if(type_2 == REAL_TYPE){
-					return INT_TYPE;
+					return REAL_TYPE;
 				}
 				else{
 					type_error(type_1, type_2, op_type);
@@ -215,20 +193,20 @@ int get_result_type(int type_1, int type_2, int op_type){ /* type check and resu
 			break;
 		/* ---------------------------------------------------------- */
 		default: /* wrong choice case */
-			fprintf(stderr, "Error in operator selection!\n");
+			fprintf(stderr, "Error en seleccionar operador!\n");
 			exit(1);
 	}
 }
 
 void type_error(int type_1, int type_2, int op_type){ /* print type error */
-	fprintf(stderr, "Type conflict between ");
+	fprintf(stderr, "Conflicto de tipo entre ");
 	/* first type */
 	if      (type_1 == INT_TYPE)           fprintf(stderr,"%s","int");
 	else if (type_1 == REAL_TYPE)          fprintf(stderr,"%s","real");
 	else if (type_1 == CHAR_TYPE)          fprintf(stderr,"%s","char");
 	else                                   fprintf(stderr,"%s","other");
 	
-	fprintf(stderr, " and ");	
+	fprintf(stderr, " y ");	
 	
 	/* second type */
 	if      (type_2 == INT_TYPE)           fprintf(stderr,"%s","int");
@@ -237,7 +215,7 @@ void type_error(int type_1, int type_2, int op_type){ /* print type error */
 	else                                   fprintf(stderr,"%s","other");
 	
 	/* operator */
-	fprintf(stderr," using op type ");
+	fprintf(stderr," usando operador ");
 	switch(op_type){
 		case NONE:
 			fprintf(stderr,"%s","NONE");
@@ -261,12 +239,12 @@ void type_error(int type_1, int type_2, int op_type){ /* print type error */
 			fprintf(stderr,"%s","EQU_OP");
 			break;
 		default: 
-			fprintf(stderr, "Error in operator selection!\n");
+			fprintf(stderr, "EError en selección de operador!\n");
 			exit(1);	
 	}
 	
 	/* line */
-	fprintf(stderr, " in line %d\n", lineno);
+	fprintf(stderr, " en linea %d\n", lineno);
 	
 	exit(1);
 }

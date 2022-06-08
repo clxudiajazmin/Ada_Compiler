@@ -2,6 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+/* flag variable that shows revisit in assignment expression */
+int cont_revisit = 0; // 1: contains revisit, 0: not
+
 /* ------------------AST NODE MANAGEMENT-------------------- */
 /* The basic node */
 AST_Node *new_ast_node(Node_Type type, AST_Node *left, AST_Node *right){
@@ -120,6 +123,10 @@ AST_Node *new_ast_if_node(AST_Node *condition, AST_Node *if_branch, AST_Node **e
 	return (struct AST_Node *) v;
 }
 
+AST_Node *new_ast_endif_node(){
+	return (struct AST_Node *) v;
+}
+
 AST_Node *new_ast_elsif_node(AST_Node *condition, AST_Node *elsif_branch){
 	// allocate memory
 	AST_Node_Elsif *v = malloc (sizeof (AST_Node_Elsif));
@@ -132,7 +139,6 @@ AST_Node *new_ast_elsif_node(AST_Node *condition, AST_Node *elsif_branch){
 	// return type-casted result
 	return (struct AST_Node *) v;
 }
-
 
 AST_Node *new_ast_while_node(AST_Node *condition, AST_Node *while_branch){
 	// allocate memory
@@ -172,7 +178,6 @@ AST_Node *new_ast_simple_node(int statement_type){
 	// return type-casted result
 	return (struct AST_Node *) v;
 }
- 
 /* Expressions */
 
 AST_Node *new_ast_arithm_node(enum Arithm_op op, AST_Node *left, AST_Node *right){
@@ -183,7 +188,7 @@ AST_Node *new_ast_arithm_node(enum Arithm_op op, AST_Node *left, AST_Node *right
 	v->type = ARITHM_NODE;
 	v->op = op;
 	v->left = left;
-	v->right = right;
+	v->right = right;	
 	
 	// set data type
 	v->data_type = get_result_type(
@@ -294,18 +299,59 @@ int expression_data_type(AST_Node *node){
 	switch(node->type){
 		case ARITHM_NODE: /* arithmetic expression */
 			temp_arithm = (AST_Node_Arithm *) node;
+			
+			/* set datatype again */
+			temp_arithm->data_type = get_result_type(
+				expression_data_type(temp_arithm->left),  /* data type of left expression */
+				expression_data_type(temp_arithm->right), /* data type of right expression */
+				ARITHM_OP                    /* operation type */
+			);
+			
 			return temp_arithm->data_type; 
 			break;
 		case BOOL_NODE:   /* boolean expression */
 			temp_bool = (AST_Node_Bool *) node;
+			
+			/* set datatype again */
+			if(temp_bool->op != NOT){ /* AND or OR */
+				temp_bool->data_type = get_result_type(
+					expression_data_type(temp_bool->left),  /* data type of left expression */
+					expression_data_type(temp_bool->right), /* data type of right expression */
+					BOOL_OP                      /* operation type */
+				);	
+			}
+			else{ /* NOT */
+				temp_bool->data_type = get_result_type(
+					expression_data_type(temp_bool->left), /* data type of left expression */
+					UNDEF,                      /* there is no right expression */
+					NOT_OP                      /* operation type */
+				);	
+			}
+			
 			return temp_bool->data_type;
 			break;
 		case REL_NODE:    /* relational expression */
 			temp_rel = (AST_Node_Rel *) node;
+			
+			/* set datatype again */
+			temp_rel->data_type = get_result_type(
+					expression_data_type(temp_rel->left),  /* data type of left expression  */
+					expression_data_type(temp_rel->right), /* data type of right expression */
+					REL_OP                       /* operation type */
+			);
+			
 			return temp_rel->data_type;
 			break;
 		case EQU_NODE:    /* equality expression */
 			temp_equ = (AST_Node_Equ *) node;
+			
+			/* set datatype again */
+			temp_equ->data_type = get_result_type(
+					expression_data_type(temp_equ->left),  /* data type of left expression  */
+					expression_data_type(temp_equ->right), /* data type of right expression */
+					EQU_OP                       /* operation type */
+			);
+			
 			return temp_equ->data_type;
 			break;
 		case REF_NODE:    /* identifier reference */
@@ -325,7 +371,51 @@ int expression_data_type(AST_Node *node){
 			return temp_const->const_type; /* constant data type */
 			break;
 		default: /* wrong choice case */
-			fprintf(stderr, "Error in node selection!\n");
+			fprintf(stderr, "Error en selección de nodo!\n");
+			exit(1);
+	}
+}
+
+int getGraphIndex(AST_Node *node){
+	/* temp nodes */
+	AST_Node_Arithm *temp_arithm;
+	AST_Node_Bool *temp_bool;
+	AST_Node_Rel *temp_rel;
+	AST_Node_Equ *temp_equ;
+	AST_Node_Ref *temp_ref;
+	
+	/* return type depends on the AST node type */
+	switch(node->type){
+		case ARITHM_NODE: /* arithmetic expression */
+			temp_arithm = (AST_Node_Arithm *) node;
+			
+			return temp_arithm->g_index; 
+			break;
+		case BOOL_NODE:   /* boolean expression */
+			temp_bool = (AST_Node_Bool *) node;
+			
+			return temp_bool->g_index;
+			break;
+		case REL_NODE:    /* relational expression */
+			temp_rel = (AST_Node_Rel *) node;
+			
+			return temp_rel->g_index;
+			break;
+		case EQU_NODE:    /* equality expression */
+			temp_equ = (AST_Node_Equ *) node;
+			
+			return temp_equ->g_index;
+			break;
+		case REF_NODE:    /* identifier reference */
+			temp_ref = (AST_Node_Ref *) node;
+			
+			return temp_ref->entry->g_index;
+			break;
+		case CONST_NODE:  /* constant */
+			return -1;
+			break;
+		default: /* wrong choice case */
+			fprintf(stderr, "Error en nodo de selección!\n");
 			exit(1);
 	}
 }
@@ -349,20 +439,20 @@ void ast_print_node(AST_Node *node){
 	
 	switch(node->type){
 		case BASIC_NODE:
-			printf("Basic Node\n");
+			printf("nodo Básico\n");
 			break;
 		case DECLARATIONS:
 			temp_declarations = (struct AST_Node_Declarations *) node;
-			printf("Declarations Node with %d declarations\n", temp_declarations->declaration_count);
+			printf("Nodo de declaración con %d declaraciones\n", temp_declarations->declaration_count);
 			break;
 		case DECL_NODE:
 			temp_decl = (struct AST_Node_Decl *) node;
-			printf("Declaration Node of data-type %d for %d names\n",
+			printf("Nodo de declaración de data-type %d para %d nombres\n",
 				temp_decl->data_type, temp_decl->names_count);
 			break;
 		case CONST_NODE:
 			temp_const = (struct AST_Node_Const *) node;
-			printf("Constant Node of const-type %d with value ", temp_const->const_type);
+			printf("Nodo Constante de const-type %d con valor ", temp_const->const_type);
 			switch(temp_const->const_type){
 				case INT_TYPE:
 					printf("%d\n", temp_const->val.ival);
@@ -380,11 +470,11 @@ void ast_print_node(AST_Node *node){
 			break;
 		case STATEMENTS:
 			temp_statements = (struct AST_Node_Statements *) node;
-			printf("Statements Node with %d statements\n", temp_statements->statement_count);
+			printf("Nodo de Statements con %d statements\n", temp_statements->statement_count);
 			break;
 		case IF_NODE:
 			temp_if = (struct AST_Node_If *) node;
-			printf("If Node with %d elseifs and ", temp_if->elseif_count);
+			printf("Nodo If con %d elseifs y ", temp_if->elseif_count);
 			if(temp_if->else_branch == NULL){
 				printf("no else\n");
 			}
@@ -393,41 +483,41 @@ void ast_print_node(AST_Node *node){
 			}			
 			break;
 		case ELSIF_NODE:
-			printf("Elsif Node\n");
+			printf("Nodo Elsif\n");
 			break;
 		case WHILE_NODE:
-			printf("While Node\n");
+			printf("Nodo While\n");
 			break;
 		case ASSIGN_NODE:
 			temp_assign = (struct AST_Node_Assign *) node;
-			printf("Assign Node of entry %s\n", temp_assign->entry->st_name);
+			printf("Nodo de Asignación de entrada %s\n", temp_assign->entry->st_name);
 			break;
 		case SIMPLE_NODE:
 			temp_simple = (struct AST_Node_Simple *) node;
-			printf("Simple Node of statement %d\n", temp_simple->statement_type);
+			printf("Nodo simple de statement %d\n", temp_simple->statement_type);
 			break;
 		case ARITHM_NODE:
 			temp_arithm = (struct AST_Node_Arithm *) node;
-			printf("Arithmetic Node of operator %d with result type %d\n", temp_arithm->op, temp_arithm->data_type);
+			printf("Nodo Aritmético con operador %d con resultado de tipo %d\n", temp_arithm->op, temp_arithm->data_type);
 			break;
 		case BOOL_NODE:
 			temp_bool = (struct AST_Node_Bool *) node;
-			printf("Boolean Node of operator %d\n", temp_bool->op);
+			printf("Nodo booleano de operador %d\n", temp_bool->op);
 			break;
 		case REL_NODE:
 			temp_rel = (struct AST_Node_Rel *) node;
-			printf("Relational Node of operator %d\n", temp_rel->op);
+			printf("Nodo relacional de operador %d\n", temp_rel->op);
 			break;
 		case EQU_NODE:
 			temp_equ = (struct AST_Node_Equ *) node;
-			printf("Equality Node of operator %d\n", temp_equ->op);
+			printf("Nodo de igualdad de operador %d\n", temp_equ->op);
 			break;
 		case REF_NODE:
 			temp_ref = (struct AST_Node_Ref *) node;
-			printf("Reference Node of entry %s\n", temp_ref->entry->st_name);
+			printf("Nodo de referencia de entrada %s\n", temp_ref->entry->st_name);
 			break;
 		default: /* wrong choice case */
-			fprintf(stderr, "Error in node selection!\n");
+			fprintf(stderr, "Error en selección de nodo!\n");
 			exit(1);
 	}
 }
@@ -443,8 +533,8 @@ void ast_traversal(AST_Node *node){
 	/* left and right child cases */
 	if(node->type == BASIC_NODE || node->type == ARITHM_NODE || node->type == BOOL_NODE
 	|| node->type == REL_NODE || node->type == EQU_NODE){
-		//ast_traversal(node->left);
-		//ast_traversal(node->right);
+		ast_traversal(node->left);
+		ast_traversal(node->right);
 		ast_print_node(node); // postfix
 	}
 	/* declarations case */
@@ -468,7 +558,7 @@ void ast_traversal(AST_Node *node){
 		AST_Node_If *temp_if = (struct AST_Node_If *) node;	
 		ast_print_node(node);
 		
-		printf("Condition:\n");
+		printf("Condición:\n");
 		ast_traversal(temp_if->condition);
 		
 		printf("If branch:\n");
@@ -498,7 +588,7 @@ void ast_traversal(AST_Node *node){
 	else if(node->type == WHILE_NODE){
 		AST_Node_While *temp_while = (struct AST_Node_While *) node;
 		ast_print_node(node);
-		printf("Condition:\n");
+		printf("Condición:\n");
 		ast_traversal(temp_while->condition);
 		printf("While branch:\n");
 		ast_traversal(temp_while->while_branch);
@@ -507,57 +597,11 @@ void ast_traversal(AST_Node *node){
 	else if(node->type == ASSIGN_NODE){
 		AST_Node_Assign *temp_assign = (struct AST_Node_Assign *) node;
 		ast_print_node(node);
-		printf("Assigning:\n");
+		printf("Asignando:\n");
 		ast_traversal(temp_assign->assign_val);
 	}
-	
 	/* others */
 	else{
 		ast_print_node(node);
 	}
-}
-
-int getGraphIndex(AST_Node *node){
-    /* temp nodes */
-    AST_Node_Arithm *temp_arithm;
-    AST_Node_Incr *temp_incr;
-    AST_Node_Bool *temp_bool;
-    AST_Node_Rel *temp_rel;
-    AST_Node_Equ *temp_equ;
-    AST_Node_Ref *temp_ref;
-
-    /* return type depends on the AST node type */
-    switch(node->type){
-        case ARITHM_NODE: /* arithmetic expression */
-            temp_arithm = (AST_Node_Arithm *) node;
-
-            return temp_arithm->g_index; 
-            break;
-        case BOOL_NODE:   /* boolean expression */
-            temp_bool = (AST_Node_Bool *) node;
-
-            return temp_bool->g_index;
-            break;
-        case REL_NODE:    /* relational expression */
-            temp_rel = (AST_Node_Rel *) node;
-
-            return temp_rel->g_index;
-            break;
-        case EQU_NODE:    /* equality expression */
-            temp_equ = (AST_Node_Equ *) node;
-
-            return temp_equ->g_index;
-            break;
-        case REF_NODE:    /* identifier reference */
-            temp_ref = (AST_Node_Ref *) node;
-
-            return temp_ref->entry->g_index;
-            break;
-        case CONST_NODE:  /* constant */
-            return -1;
-            break;
-        default: /* wrong choice case */
-            fprintf(stderr, "Error in node selection!\n");
-            exit(1);
-    }
 }

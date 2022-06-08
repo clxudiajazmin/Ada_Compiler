@@ -83,6 +83,7 @@
 %type <node> statements
 %type <node> if_statement elsif_part else_part
 %type <node> while_statement
+%type <node> put_statement get_statement
 
 %start procedure
 
@@ -91,10 +92,12 @@
 /* procedure: PROC IDENT IS declarations BEG statements END IDENT SEMI */
 /* ; */
 
-//esta parte ni putisima idea de para que es o porque la hace, en teoria lo de proc ident is declarations... no deberia ni estar lmfao
 procedure: PROC IDENT IS declarations BEG statements END IDENT SEMI
-	declarations { main_decl_tree = $1; ast_traversal($1); }
-	statements   { main_func_tree = $3; ast_traversal($3); }
+	{ 	
+		main_decl_tree = $4; ast_traversal($4); 
+	 	main_func_tree = $6; ast_traversal($6); 
+	}
+	
 ;
 
 
@@ -112,7 +115,7 @@ declarations: declarations declaration
 ;
 
 declaration: names INI type SEMI
-{
+	{
 		int i;
 		$$ = new_ast_decl_node($3, names, nc);
 		nc = 0;
@@ -126,6 +129,13 @@ declaration: names INI type SEMI
 				set_type(temp->names[i]->st_name, temp->data_type, UNDEF);
 			}
 		}
+	}
+| name INI type ASSIGN constant SEMI
+	{ 
+		AST_Node_Const *temp = (AST_Node_Const*) $5;
+		$1->val = temp->val;
+		$1->st_type = temp->const_type;
+		$$ = $5;
 	}
 ;
 
@@ -221,9 +231,17 @@ while_statement: WHILE expression LOOP statements END LOOP SEMI
 }
 
 put_statement: PUT LPAREN expression RPAREN SEMI
+	{
+		/* else exists */
+		$$ = $3;
+	}
 ;
 
 get_statement: GET LPAREN expression RPAREN SEMI
+	{
+		/* else exists */
+		$$ = $3;
+	}
 ;
 
 new_line_statement: NEW_LINE SEMI
@@ -394,19 +412,12 @@ int main (int argc, char *argv[]){
 	
 	printf("Parsing finished!\n");
 	
-	if(queue != NULL){
-		printf("Warning: Something has not been checked in the revisit queue!\n");
-	}
 	
 	// symbol table dump
 	yyout = fopen("symtab_dump.out", "w");
 	symtab_dump(yyout);
 	fclose(yyout);
 	
-	// revisit queue dump
-	yyout = fopen("revisit_dump.out", "w");
-	revisit_dump(yyout);
-	fclose(yyout);
 	
 	//added on mips
 	generate_code();

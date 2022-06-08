@@ -1,6 +1,7 @@
 ------------ -------------- ------ ------------
-Name         Type           Scope  Line Numbers
+Nombre         Tipo           Scope  N linea	
 ------------ -------------- ------ ------------
-A            int              0     2    6    8    9 
-B            char             0     3    6 
-Hello        undef            0     1   12 
+a            char             0     2    6 
+b            real             0     3    7   10   10 
+c            real             0     4    7    7   10 
+Main         undef            0     1   11 

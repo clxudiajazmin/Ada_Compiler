@@ -1,10 +1,11 @@
-procedure Greet is
-   a : Integer;
-   b: Float; 
-begin
-   -- Print "Hello, World!" to the screen
-   a := 'u';
-   a:= b;
-   
-   Put_Line("Hello, World!");
-end Greet;
+procedure Main is
+   a : Character := 'c';
+   b : Float := 2.5;
+   c : Float := 7.2;
+   begin
+   if a = 'c' then
+      c := c + b;
+   end if;
+
+   b := b+ c;
+end Main;

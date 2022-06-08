@@ -1,24 +1,24 @@
 /* ---------------------NODE TYPES-------------------------- */
 
 typedef enum Node_Type {
-	BASIC_NODE,   // no special usage (for roots only)
+	BASIC_NODE,   //  0 - no special usage (for roots only)
 	// declarations
-	DECLARATIONS, // declarations
-	DECL_NODE,    // declaration
-	CONST_NODE,   // constant
+	DECLARATIONS, //  1 - declarations
+	DECL_NODE,    //  2 - declaration
+	CONST_NODE,   //  3 - constant
 	// statements
-	STATEMENTS,   // statements
-	IF_NODE,      // if statement
-	ELSIF_NODE,   // else if branch
-	WHILE_NODE,   // while statement
-	ASSIGN_NODE,  // assigment
-	SIMPLE_NODE,  // continue or break statement
+	STATEMENTS,   //  4 - statements
+	IF_NODE,      //  5 - if statement
+	ELSIF_NODE,   //  6 - else if branch
+	WHILE_NODE,   //  8 - while statement
+	ASSIGN_NODE,  //  9 - assigment
+	SIMPLE_NODE,  // 10 - continue or break statement
 	// expressions
-	ARITHM_NODE,  // arithmetic expression
-	BOOL_NODE,    // boolean expression
-	REL_NODE,     // relational expression
-	EQU_NODE,     // equality expression
-	REF_NODE,	  // identifier in expression
+	ARITHM_NODE,  // 14 - arithmetic expression
+	BOOL_NODE,    // 15 - boolean expression
+	REL_NODE,     // 16 - relational expression
+	EQU_NODE,     // 17 - equality expression
+	REF_NODE,	  // 18 - identifier in expression
 }Node_Type;
 
 /* --------------------OPERATOR TYPES----------------------- */
@@ -53,6 +53,7 @@ typedef enum Equ_op{
 /* The basic node */
 typedef struct AST_Node{
 	enum Node_Type type; // node type
+	
 	struct AST_Node *left;  // left child
 	struct AST_Node *right; // right child
 }AST_Node;
@@ -153,10 +154,12 @@ typedef struct AST_Node_Simple{
 	int statement_type;
 }AST_Node_Simple;
 
-
 /* Expressions */
 typedef struct AST_Node_Arithm{
 	enum Node_Type type; // node type
+	
+	struct AST_Node *left;  // left child
+	struct AST_Node *right; // right child
 	
 	// data type of result
 	int data_type;
@@ -164,12 +167,15 @@ typedef struct AST_Node_Arithm{
 	// operator
 	enum Arithm_op op;
 	
-	struct AST_Node *left;  // left child
-	struct AST_Node *right; // right child
+	/* register assignment stuff */
+	int g_index;
 }AST_Node_Arithm;
 
 typedef struct AST_Node_Bool{
 	enum Node_Type type; // node type
+	
+	struct AST_Node *left;  // left child
+	struct AST_Node *right; // right child
 	
 	// data type of result
 	int data_type;
@@ -177,12 +183,15 @@ typedef struct AST_Node_Bool{
 	// operator
 	enum Bool_op op;
 	
-	struct AST_Node *left;  // left child
-	struct AST_Node *right; // right child
+	/* register assignment stuff */
+	int g_index;
 }AST_Node_Bool;
 
 typedef struct AST_Node_Rel{
 	enum Node_Type type; // node type
+	
+	struct AST_Node *left;  // left child
+	struct AST_Node *right; // right child
 	
 	// data type of result
 	int data_type;
@@ -190,12 +199,15 @@ typedef struct AST_Node_Rel{
 	// operator
 	enum Rel_op op;
 	
-	struct AST_Node *left;  // left child
-	struct AST_Node *right; // right child
+	/* register assignment stuff */
+	int g_index;
 }AST_Node_Rel;
 
 typedef struct AST_Node_Equ{
 	enum Node_Type type; // node type
+	
+	struct AST_Node *left;  // left child
+	struct AST_Node *right; // right child
 	
 	// data type of result
 	int data_type;
@@ -203,8 +215,8 @@ typedef struct AST_Node_Equ{
 	// operator
 	enum Equ_op op;
 	
-	struct AST_Node *left;  // left child
-	struct AST_Node *right; // right child
+	/* register assignment stuff */
+	int g_index;
 }AST_Node_Equ;
 
 typedef struct AST_Node_Ref{
@@ -216,6 +228,11 @@ typedef struct AST_Node_Ref{
 	// reference or not
 	int ref; // 0: not reference, 1: reference
 }AST_Node_Ref;
+
+/* Static AST Structures */
+static AST_Node* main_decl_tree; /* main function's declarations AST Tree */
+static AST_Node* main_func_tree; /* main function's statements AST Tree */
+static AST_Node* opt_func_tree; /* optional functions AST Tree */
 
 /* ------------------AST NODE MANAGEMENT-------------------- */
 
@@ -243,17 +260,8 @@ AST_Node *new_ast_rel_node(enum Rel_op op, AST_Node *left, AST_Node *right);
 AST_Node *new_ast_equ_node(enum Equ_op op, AST_Node *left, AST_Node *right);
 AST_Node *new_ast_ref_node(list_t *entry, int ref);
 int expression_data_type(AST_Node *node);                                    // returns the data type of an expression
+int getGraphIndex(AST_Node *node);
 
 /* Tree Traversal */
 void ast_print_node(AST_Node *node);	// print information of node
 void ast_traversal(AST_Node *node);		// tree traversal (for testing right now)
-
-
-static AST_Node* main_decl_tree; /* main function's declarations AST Tree */
-static AST_Node* main_func_tree; /* main function's statements AST Tree */
-static AST_Node* opt_func_tree; /* optional functions AST Tree */
-
-
-
-
-int getGraphIndex(AST_Node *node);

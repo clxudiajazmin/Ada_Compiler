@@ -44,12 +44,12 @@ typedef struct list_t{
 	// to store value
 	Value val;
 	
-	//register assignment stuff 
-	int g_index;
-	int reg_name;
-    
 	// type
     int st_type;
+	
+	/* register assignment stuff */
+	int g_index;
+	int reg_name;
     
     // for arrays (info type), for pointers (pointing type)
 	// and for functions (return type)
@@ -69,24 +69,37 @@ typedef struct list_t{
 
 /* Queue of identifiers to revisit */
 typedef struct revisit_queue{
+	// symbol table entry
+	list_t *entry;
+	
 	// name of identifier
 	char *st_name;
 	
 	// type of revisit
 	int revisit_type;
 	
+	// parameters of function calls
+	int **par_types;
+	int *num_of_pars;
+	int num_of_calls;
+	
+	// assignment expression nodes
+	void **nodes;
+	int num_of_assigns;
+	
 	// maybe additional information to simplify the process ...
-		
+	
 	struct revisit_queue *next;
 }revisit_queue;
 
 /* revisit types */
-#define PARAM_CHECK 1 /* Check parameters of function call when functions gets declared */
+#define PARAM_CHECK 1  /* Check parameters of function call when functions gets declared */
+#define ASSIGN_CHECK 2 /* Check assignment when function call part of the expression */
 
 /* static structures */
 static list_t **hash_table;
 static revisit_queue *queue;
-static char **str_messages; 
+static char **str_messages;
 
 // Symbol Table Functions
 void init_hash_table(); // initialize hash table
@@ -106,13 +119,12 @@ void incr_scope(); // go to next scope
 // Function Declaration and Parameters
 Param def_param(int par_type, char *param_name, int passing); // define parameter
 int func_declare(char *name, int ret_type, int num_of_pars, Param *parameters); // declare function
-int func_param_check(char *name, int num_of_pars, Param *parameters); // check parameters
+int func_param_check(char *name, int num_of_calls, int** par_types, int *num_of_pars); // check parameters
 
 // Revisit Queue Functions
-void add_to_queue(char *name, int type); // add to queue
-int revisit(char *name); // revisit entry by also removing it from queue
-void revisit_dump(FILE *of); // dump file
+void add_to_queue(list_t *entry, char *name, int type); // add to queue
+revisit_queue *search_queue(char *name); // search queue
+revisit_queue *search_prev_queue(char *name); // search previous of element
 
-
-//string messages for mips
+// String Messages
 void add_to_str_messages(char *str);
