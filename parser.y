@@ -38,8 +38,6 @@
 	int data_type;
 	int const_type;
 
-	// for parameters
-	Param par;
 	
 }
 
@@ -126,7 +124,6 @@ declaration: names INI type SEMI
 	{
 		int i;
 		$$ = new_ast_decl_node($3, names, nc);
-		nc = 0;
 		
 		AST_Node_Decl *temp = (AST_Node_Decl*) $$;
 		
@@ -377,7 +374,7 @@ void add_to_names(list_t *entry){
 	else{
 		nc++;
 		names = (list_t **) realloc(names, nc * sizeof(list_t *));
-		names[nc - 1] = entry;		
+		names[nc - 1] = entry;
 	}
 }
 
@@ -424,6 +421,6 @@ int main (int argc, char *argv[]){
 	
 	
 	//added on mips
-	//generate_code();
+	generate_code();
 	return flag;
 }

@@ -1,8 +1,8 @@
 ------------ -------------- ------ ------------
 Nombre         Tipo           Scope  N linea	
 ------------ -------------- ------ ------------
-er           undef            0     8 
-A            int              0     2    7    7 
-B            real             0     3 
+A            int              0     2    6    8    8 
+B            real             0     3    9    9 
 C            int              0     4 
-Main         undef            0     1 
+D            real             0     5    9 
+Main         undef            0     1   10 

@@ -39,91 +39,28 @@ void insert(char *name, int len, int type, int lineno){
 	
 	/* variable not yet in table */
 	if (l == NULL){
-		/* check if we are declaring */
-		if(declare == 1){
-			/* set up entry */
-			l = (list_t*) malloc(sizeof(list_t));
-			strncpy(l->st_name, name, len);
-			l->st_size = len;
-			l->st_type = type;
-			l->scope = cur_scope;
-			l->lines = (RefList*) malloc(sizeof(RefList));
-			l->lines->lineno = lineno;
-			l->lines->next = NULL;
-			
-			/* add to hashtable */
-			l->next = hash_table[hashval];
-			hash_table[hashval] = l; 
-			// printf("Inserted %s for the first time with linenumber %d!\n", name, lineno);
-		}
-		else{
-			/* add it to check it again later */
-			l = (list_t*) malloc(sizeof(list_t));
-			strncpy(l->st_name, name, len);
-			l->st_size = len;
-			l->st_type = type;
-			l->scope = cur_scope;
-			l->lines = (RefList*) malloc(sizeof(RefList));
-			l->lines->lineno = lineno;
-			l->lines->next = NULL;
-			l->next = hash_table[hashval];
-			hash_table[hashval] = l;
-			// printf("Inserted %s at line %d to check it again later!\n", name, lineno);
-			
-			/* Adding identifier to the revisit queue */
-			add_to_queue(l, l->st_name, PARAM_CHECK);
-		}
+		l = (list_t*) malloc(sizeof(list_t));
+		strncpy(l->st_name, name, len);  
+		/* add to hashtable */
+		l->st_type = type;
+		l->scope = cur_scope;
+		l->lines = (RefList*) malloc(sizeof(RefList));
+		l->lines->lineno = lineno;
+		l->lines->next = NULL;
+		l->next = hash_table[hashval];
+		hash_table[hashval] = l; 
+		//printf("Inserted %s for the first time with linenumber %d!\n", name, lineno); // error checking
 	}
-	/* found in table */
+	/* found in table, so just add line number */
 	else{
-		// just add line number
-		if(declare == 0){
-			/* find last reference */
-			RefList *t = l->lines;
-			while (t->next != NULL) t = t->next;
-			
-			/* add linenumber to reference list */
-			t->next = (RefList*) malloc(sizeof(RefList));
-			t->next->lineno = lineno;
-			t->next->next = NULL;
-			// printf("Found %s again at line %d!\n", name, lineno);
-		}
-		/* new entry */
-		else{
-			/* same scope - multiple declaration error! */
-			if(l->scope == cur_scope){
-				//fprintf(stderr, "A multiple declaration of variable %s at line %d\n", name, lineno);
- 				exit(1);
-			}
-			/* other scope - but function declaration */
-			else if(function_decl == 1){
-				/* find last reference */
-				RefList *t = l->lines;
-				while (t->next != NULL) t = t->next;
-				
-				/* add linenumber to reference list */
-				t->next = (RefList*) malloc(sizeof(RefList));
-				t->next->lineno = lineno;
-				t->next->next = NULL;
-			}
-			/* other scope - create new entry */
-			else{
-				/* set up entry */
-				l = (list_t*) malloc(sizeof(list_t));
-				strncpy(l->st_name, name, len);
-				l->st_size = len;
-				l->st_type = type;
-				l->scope = cur_scope;
-				l->lines = (RefList*) malloc(sizeof(RefList));
-				l->lines->lineno = lineno;
-				l->lines->next = NULL;
-				
-				/* add to hashtable */
-				l->next = hash_table[hashval];
-				hash_table[hashval] = l; 
-				// printf("Inserted %s for a new scope with linenumber %d!\n", name, lineno);
-			}	
-		}		
+		l->scope = cur_scope;
+		RefList *t = l->lines;
+		while (t->next != NULL) t = t->next;
+		/* add linenumber to reference list */
+		t->next = (RefList*) malloc(sizeof(RefList));
+		t->next->lineno = lineno;
+		t->next->next = NULL;
+		//printf("Found %s again at line %d!\n", name, lineno);
 	}
 }
 
@@ -133,6 +70,7 @@ list_t *lookup(char *name){ /* return symbol if found or NULL if not found */
 	while ((l != NULL) && (strcmp(name,l->st_name) != 0)) l = l->next;
 	return l;
 }
+
 
 void symtab_dump(FILE * of){  /* dump file */
   int i;
@@ -160,6 +98,7 @@ void symtab_dump(FILE * of){  /* dump file */
     }
   }
 }
+
 
 // Type Functions
 

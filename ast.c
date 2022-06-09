@@ -569,6 +569,7 @@ void ast_traversal(AST_Node *node){
 		
 		printf("If branch:\n");
 		ast_traversal(temp_if->if_branch);
+
 		
 		if(temp_if->elseif_count > 0 ){
 			printf("Else if branches:\n");
