@@ -1,5 +1,5 @@
 procedure Check_Positive is
-    N : Integer;
+    N : Integer := 2;
     begin
         -- Put a String
         N := 5;

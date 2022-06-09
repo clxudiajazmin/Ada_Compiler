@@ -1,7 +1,8 @@
 {
     "files.associations": {
         "semantics.h": "c",
-        "__node_handle": "c"
+        "__node_handle": "c",
+        "ios": "c"
     },
     "C_Cpp.errorSquiggles": "Disabled"
 }

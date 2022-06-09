@@ -75,7 +75,7 @@
 %type <node> procedure
 %type <node> declarations declaration
 %type <data_type> type
-%type <symtab_item> name
+%type <symtab_item> name names
 %type <node> constant
 %type <node> expression var_ref
 %type <val> sign
@@ -130,7 +130,7 @@ declaration: names INI type SEMI
 			}
 		}
 	}
-| name INI type ASSIGN constant SEMI
+| names INI type ASSIGN constant SEMI
 	{ 
 		AST_Node_Const *temp = (AST_Node_Const*) $5;
 		$1->val = temp->val;
@@ -142,6 +142,7 @@ declaration: names INI type SEMI
 type: INT  		{ $$ = INT_TYPE;    }
 	| CHAR 		{ $$ = CHAR_TYPE;   }
 	| FLOAT 	{ $$ = REAL_TYPE;   }
+	| STR 		{ $$ = STR_TYPE;    }
 ;
 
 names: name { add_to_names($1); }
@@ -155,6 +156,7 @@ name: IDENT { $$ = $1; }
 constant: INTCONST 	{ $$ = new_ast_const_node(INT_TYPE, $1);  }
 | FLOATCONST		{ $$ = new_ast_const_node(REAL_TYPE, $1);  }
 | CHARCONST			{ $$ = new_ast_const_node(CHAR_TYPE, $1);  }
+| STRING			{ $$ = new_ast_const_node(STR_TYPE, $1);  }
 ;
 
 statements: statements statement 
@@ -171,17 +173,14 @@ statements: statements statement
 statement: assigment 
 	{
 		$$ = $1; /* just pass information */
-		ast_traversal($$); /* just for testing */
 	}
 | if_statement 
 	{ 
 		$$ = $1; /* just pass information */
-		ast_traversal($$); /* just for testing */
 	}
 | while_statement
 	{ 
 	$$ = $1; /* just pass information */
-	ast_traversal($$); /* just for testing */
 	}
 | put_statement { $$ = NULL; /* will do it later ! */ }
 | get_statement { $$ = NULL; /* will do it later ! */ }
@@ -213,7 +212,7 @@ elsif_part: elsif_part ELSIF expression THEN statements
 	}
 ; 
 
-else_part: ELSE expression THEN statements
+else_part: ELSE statements
 	{
 		/* else exists */
 		$$ = $2;
@@ -232,14 +231,12 @@ while_statement: WHILE expression LOOP statements END LOOP SEMI
 
 put_statement: PUT LPAREN expression RPAREN SEMI
 	{
-		/* else exists */
 		$$ = $3;
 	}
 ;
 
 get_statement: GET LPAREN expression RPAREN SEMI
 	{
-		/* else exists */
 		$$ = $3;
 	}
 ;
@@ -315,10 +312,7 @@ expression: expression ADDOP expression
 			$$ = $2;
 		}
 	}
-| STRING
-	{
-		AST_Node *temp = new_ast_const_node(STR_TYPE, $1);
-	}
+
 ;
 
 sign: ADDOP
@@ -401,15 +395,11 @@ int main (int argc, char *argv[]){
 	// initialize symbol table
 	init_hash_table();
 	
-	// initialize revisit queue
-	queue = NULL;
-	
 	// parsing
 	int flag;
 	yyin = fopen(argv[1], "r");
 	flag = yyparse();
 	fclose(yyin);
-	
 	printf("Parsing finished!\n");
 	
 	
@@ -420,6 +410,6 @@ int main (int argc, char *argv[]){
 	
 	
 	//added on mips
-	generate_code();
+	//generate_code();
 	return flag;
 }

@@ -1,6 +1,6 @@
 procedure Hello is
-   A : Integer;
-   B : Float;
+   A : Integer := 1;
+   B : Float:= 1.2;
    
 begin
    B := 1.1;

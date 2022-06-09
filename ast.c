@@ -123,9 +123,6 @@ AST_Node *new_ast_if_node(AST_Node *condition, AST_Node *if_branch, AST_Node **e
 	return (struct AST_Node *) v;
 }
 
-AST_Node *new_ast_endif_node(){
-	return (struct AST_Node *) v;
-}
 
 AST_Node *new_ast_elsif_node(AST_Node *condition, AST_Node *elsif_branch){
 	// allocate memory

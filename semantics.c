@@ -56,7 +56,7 @@ int get_result_type(int type_1, int type_2, int op_type){ /* type check and resu
 			// first type REAL
 			else if(type_1 == REAL_TYPE){
 				// second type INT, REAL or CHAR
-				if(type_2 == INT_TYPE || type_2 == REAL_TYPE || type_2 == CHAR_TYPE){
+				if(type_2 == REAL_TYPE){
 					return REAL_TYPE;
 				}
 				else{
@@ -68,10 +68,6 @@ int get_result_type(int type_1, int type_2, int op_type){ /* type check and resu
 				// second type INT or CHAR
 				if(type_2 == INT_TYPE || type_2 == CHAR_TYPE){
 					return CHAR_TYPE;
-				}
-				// second type REAL
-				else if(type_2 == REAL_TYPE){
-					return REAL_TYPE;
 				}
 				else{
 					type_error(type_1, type_2, op_type);
@@ -239,7 +235,7 @@ void type_error(int type_1, int type_2, int op_type){ /* print type error */
 			fprintf(stderr,"%s","EQU_OP");
 			break;
 		default: 
-			fprintf(stderr, "EError en selección de operador!\n");
+			fprintf(stderr, "Error en selección de operador!\n");
 			exit(1);	
 	}
 	
