@@ -7,9 +7,9 @@ extern int lineno;
 
 // actual types are: INT_TYPE, REAL_TYPE, CHAR_TYPE
 
-int get_result_type(int type_1, int type_2, int op_type){ /* type check and result type */
+int get_result_type(int type_1, int type_2, int op_type){ // type check and result type 
 	switch(op_type){
-		case NONE: /* type compatibility only, '1': compatible */
+		case NONE: // type compatibility only, '1': compatible 
 			// first type INT
 			if(type_1 == INT_TYPE){
 				// second type INT or CHAR
@@ -41,8 +41,8 @@ int get_result_type(int type_1, int type_2, int op_type){ /* type check and resu
 				}
 			}
 			break;
-		/* ---------------------------------------------------------- */
-		case ARITHM_OP: /* arithmetic operator */
+		// ---------------------------------------------------------- 
+		case ARITHM_OP: // arithmetic operator 
 			// first type INT
 			if(type_1 == INT_TYPE){
 				// second type INT or CHAR
@@ -77,8 +77,8 @@ int get_result_type(int type_1, int type_2, int op_type){ /* type check and resu
 				type_error(type_1, type_2, op_type);
 			}
 			break;
-		/* ---------------------------------------------------------- */
-		case BOOL_OP: /* Boolean operator */
+		// ---------------------------------------------------------- 
+		case BOOL_OP: // Boolean operator 
 			// first type INT
 			if(type_1 == INT_TYPE){
 				// second type INT or CHAR
@@ -103,8 +103,8 @@ int get_result_type(int type_1, int type_2, int op_type){ /* type check and resu
 				type_error(type_1, type_2, op_type);
 			}
 			break;
-		/* ---------------------------------------------------------- */
-		case NOT_OP: /* special case of NOTOP */
+		// ---------------------------------------------------------- 
+		case NOT_OP: // special case of NOTOP 
 			// type INT
 			if(type_1 == INT_TYPE){
 				return INT_TYPE;
@@ -117,8 +117,8 @@ int get_result_type(int type_1, int type_2, int op_type){ /* type check and resu
 				type_error(type_1, type_2, op_type);
 			}
 			break;
-		/* ---------------------------------------------------------- */
-		case REL_OP: /* Relational operator */
+		// ---------------------------------------------------------- 
+		case REL_OP: // Relational operator 
 			// first type INT
 			if(type_1 == INT_TYPE){
 				// second type INT, REAL or CHAR
@@ -152,8 +152,8 @@ int get_result_type(int type_1, int type_2, int op_type){ /* type check and resu
 				type_error(type_1, type_2, op_type);
 			}
 			break;
-		/* ---------------------------------------------------------- */
-		case EQU_OP: /* Equality operator */
+		// ---------------------------------------------------------- 
+		case EQU_OP: // Equality operator 
 			// first type INT
 			if(type_1 == INT_TYPE){
 				// second type INT or CHAR
@@ -187,16 +187,16 @@ int get_result_type(int type_1, int type_2, int op_type){ /* type check and resu
 				type_error(type_1, type_2, op_type);
 			}
 			break;
-		/* ---------------------------------------------------------- */
-		default: /* wrong choice case */
+		// ---------------------------------------------------------- 
+		default: // wrong choice case 
 			fprintf(stderr, "Error en seleccionar operador!\n");
 			exit(1);
 	}
 }
 
-void type_error(int type_1, int type_2, int op_type){ /* print type error */
+void type_error(int type_1, int type_2, int op_type){ // print type error 
 	fprintf(stderr, "Conflicto de tipo entre ");
-	/* first type */
+	// first type 
 	if      (type_1 == INT_TYPE)           fprintf(stderr,"%s","int");
 	else if (type_1 == REAL_TYPE)          fprintf(stderr,"%s","real");
 	else if (type_1 == CHAR_TYPE)          fprintf(stderr,"%s","char");
@@ -204,13 +204,13 @@ void type_error(int type_1, int type_2, int op_type){ /* print type error */
 	
 	fprintf(stderr, " y ");	
 	
-	/* second type */
+	// second type 
 	if      (type_2 == INT_TYPE)           fprintf(stderr,"%s","int");
 	else if (type_2 == REAL_TYPE)          fprintf(stderr,"%s","real");
 	else if (type_2 == CHAR_TYPE)          fprintf(stderr,"%s","char");
 	else                                   fprintf(stderr,"%s","other");
 	
-	/* operator */
+	// operator 
 	fprintf(stderr," usando operador ");
 	switch(op_type){
 		case NONE:
@@ -239,7 +239,7 @@ void type_error(int type_1, int type_2, int op_type){ /* print type error */
 			exit(1);	
 	}
 	
-	/* line */
+	// line 
 	fprintf(stderr, " en linea %d\n", lineno);
 	
 	exit(1);

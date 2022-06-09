@@ -1,6 +1,6 @@
 #include "mips.h"
 
-/* main assembly code generation function */
+// main assembly code generation function 
 void generate_code(){	
 	FILE *fp;
 	fp = fopen("out.asm", "w");
@@ -12,21 +12,21 @@ void generate_code(){
 	fclose(fp);
 }
 
-/* data declaration assembly code */
+// data declaration assembly code 
 void generate_data_declarations(FILE *fp){
-	/* print .data */
+	// print .data 
 	fprintf(fp, ".data\n");	
 	
-	/* loop through the symbol table's lists */
+	// loop through the symbol table's lists 
 	fprintf(fp, "# variables\n");
 	int i, j;
 	for (i = 0; i < SIZE; i++){ 
-		/* if hashtable list not empty */
+		// if hashtable list not empty 
 		if (hash_table[i] != NULL){ 
 			list_t *l = hash_table[i];
-			/* loop through list */
+			// loop through list 
 			while (l != NULL){ 
-				/* Simple Variables */
+				// Simple Variables 
 				if (l->st_type == INT_TYPE){
 					fprintf(fp, "%s: .word %d\n", l->st_name, l->val.ival);
 				}
@@ -41,26 +41,26 @@ void generate_data_declarations(FILE *fp){
 		}
 	}
 	
-	/* loop through the string messages */
+	// loop through the string messages 
 	fprintf(fp, "# messages\n");
 	for(i = 0; i < num_of_msg; i++){
 		fprintf(fp, "msg%d: .asciiz %s\n", (i + 1), str_messages[i]);
 	}
 }
-/* statements assembly code */
+// statements assembly code 
 void generate_statements(FILE *fp){
 	int i, j;
 	
-	/* print .text */
+	// print .text 
 	fprintf(fp, "\n.text\n");
 	
-	/* Main Function Register Allocation */
+	// Main Function Register Allocation 
 	initGraph();
 	
 	main_reg_allocation(main_decl_tree);
 	main_reg_allocation(main_func_tree);
 	
-	/* add edges from all the non-temporary variables */
+	// add edges from all the non-temporary variables 
 	for(i = 0; i < var_count - temp_count; i++){
 		for(j = 1; j < var_count; j++){
 			if(i < j){
@@ -74,7 +74,7 @@ void generate_statements(FILE *fp){
 	
 	printGraph();
 	
-	/* Main Function Register Assignment */
+	// Main Function Register Assignment 
 	int *colors = greedyColoring();
 	
 	printf("Colors:\n");
@@ -95,26 +95,26 @@ void generate_statements(FILE *fp){
 		l->reg_name = colors[i];
 	}
 	
-	/* print main: */
+	// print main: 
 	fprintf(fp, "main:\n");
 	
-	/* actual statement generation */
+	// actual statement generation 
 	
-	/* reset temporary counter */
+	// reset temporary counter 
 	temp_count = 0;
 	
-	/* traverse main function tree */
+	// traverse main function tree 
 	main_func_traversal(fp, main_func_tree);
 }
 
-/* get register name from color */
+// get register name from color 
 char * GetRegisterName(int color, int isFloat){
 	char* regName;
 	regName = (char*) malloc(5 * sizeof(char));
 	
 	if(isFloat == 0){
 		switch(color){
-		/* callee saved values */
+		// callee saved values 
 		case 0:
 		case 1:
 		case 2:
@@ -125,7 +125,7 @@ char * GetRegisterName(int color, int isFloat){
 		case 7:
 			sprintf(regName, "$s%d", color);
 			break;
-		/* caller saved temporaries */
+		// caller saved temporaries 
 		case 8:
 		case 9:
 		case 10:
@@ -143,7 +143,7 @@ char * GetRegisterName(int color, int isFloat){
 	}
 	else{
 		switch(color){
-		/* callee saved values */
+		// callee saved values 
 		case 0:
 		case 1:
 		case 2:
@@ -168,24 +168,24 @@ char * GetRegisterName(int color, int isFloat){
 	return regName;
 }
 
-/* various generation functions */
+// various generation functions 
 void generate_arithm(FILE *fp, AST_Node_Arithm *node){
 	
 	int float_op = 0;
 	int const_op = 0;
 	
-	/* GP: 0, FP: 1, Constant: 2, FP Constant: 3 */
+	// GP: 0, FP: 1, Constant: 2, FP Constant: 3 
 	int Result = 0;
 	int Operand1 = 0; 
 	int Operand2 = 0;
 	
 	AST_Node_Const *temp_const;
 	
-	/* operation */
+	// operation 
 	switch(node->op){
 		case ADD:
 		
-			/* check left operand */
+			// check left operand 
 			if (expression_data_type(node->left) == REAL_TYPE){
 				float_op = 1;
 				if(node->left->type == CONST_NODE){
@@ -206,7 +206,7 @@ void generate_arithm(FILE *fp, AST_Node_Arithm *node){
 				}
 			}
 			
-			/* check right operand */
+			// check right operand 
 			if(expression_data_type(node->right) == REAL_TYPE){
 				float_op = 1;
 				if(node->right->type == CONST_NODE){
@@ -227,7 +227,7 @@ void generate_arithm(FILE *fp, AST_Node_Arithm *node){
 				}
 			}
 			
-			/* check result */
+			// check result 
 			if(node->data_type == REAL_TYPE){
 				float_op = 1;
 				Result = 1;
@@ -244,7 +244,7 @@ void generate_arithm(FILE *fp, AST_Node_Arithm *node){
 					
 				}
 				
-				/* operand needs conversion */
+				// operand needs conversion 
 				if(Operand1 == 0){
 					fprintf(fp, "MTC1.D %s, $f30\n", GetRegisterName(getGraphIndex(node->left) , 0));
 					fprintf(fp, "CVT.D.W $f30, $f30\n");
@@ -256,7 +256,7 @@ void generate_arithm(FILE *fp, AST_Node_Arithm *node){
 				
 				fprintf(fp, "add.s ");
 				
-				/* check if result needs conversion */
+				// check if result needs conversion 
 				if(Result == 0){
 					fprintf(fp, "$f26, ");
 				}
@@ -289,7 +289,7 @@ void generate_arithm(FILE *fp, AST_Node_Arithm *node){
 				}
 				fprintf(fp, "\n");
 				
-				/* result needs type-conversion */
+				// result needs type-conversion 
 				if(Result == 0){
 					fprintf(fp, "CVT.W.D $f26, $f26\n");
 					fprintf(fp, "MTC1 %s, $f26\n", GetRegisterName(node->g_index, 0));
@@ -312,7 +312,7 @@ void generate_arithm(FILE *fp, AST_Node_Arithm *node){
 			break;		
 		case SUB:
 		
-			/* check left operand */
+			// check left operand 
 			if (expression_data_type(node->left) == REAL_TYPE){
 				float_op = 1;
 				if(node->left->type == CONST_NODE){
@@ -333,7 +333,7 @@ void generate_arithm(FILE *fp, AST_Node_Arithm *node){
 				}
 			}
 			
-			/* check right operand */
+			// check right operand 
 			if(expression_data_type(node->right) == REAL_TYPE){
 				float_op = 1;
 				if(node->right->type == CONST_NODE){
@@ -354,7 +354,7 @@ void generate_arithm(FILE *fp, AST_Node_Arithm *node){
 				}
 			}
 			
-			/* check result */
+			// check result 
 			if(node->data_type == REAL_TYPE){
 				float_op = 1;
 				Result = 1;
@@ -441,7 +441,7 @@ void generate_arithm(FILE *fp, AST_Node_Arithm *node){
 			break;
 		case MUL:
 		
-			/* check left operand */
+			// check left operand 
 			if (expression_data_type(node->left) == REAL_TYPE){
 				float_op = 1;
 				if(node->left->type == CONST_NODE){
@@ -462,7 +462,7 @@ void generate_arithm(FILE *fp, AST_Node_Arithm *node){
 				}
 			}
 			
-			/* check right operand */
+			// check right operand 
 			if(expression_data_type(node->right) == REAL_TYPE){
 				float_op = 1;
 				if(node->right->type == CONST_NODE){
@@ -483,7 +483,7 @@ void generate_arithm(FILE *fp, AST_Node_Arithm *node){
 				}
 			}
 			
-			/* check result */
+			// check result 
 			if(node->data_type == REAL_TYPE){
 				float_op = 1;
 				Result = 1;
@@ -570,7 +570,7 @@ void generate_arithm(FILE *fp, AST_Node_Arithm *node){
 			break;
 		case DIV:
 		
-			/* check left operand */
+			// check left operand 
 			if (expression_data_type(node->left) == REAL_TYPE){
 				float_op = 1;
 				if(node->left->type == CONST_NODE){
@@ -591,7 +591,7 @@ void generate_arithm(FILE *fp, AST_Node_Arithm *node){
 				}
 			}
 			
-			/* check right operand */
+			// check right operand 
 			if(expression_data_type(node->right) == REAL_TYPE){
 				float_op = 1;
 				if(node->right->type == CONST_NODE){
@@ -612,7 +612,7 @@ void generate_arithm(FILE *fp, AST_Node_Arithm *node){
 				}
 			}
 			
-			/* check result */
+			// check result 
 			if(node->data_type == REAL_TYPE){
 				float_op = 1;
 				Result = 1;
@@ -708,7 +708,7 @@ void generate_bool(FILE *fp, AST_Node_Bool *node){
 	
 	int const_op = 0;
 	
-	/* GP: 0, Constant: 1 */
+	// GP: 0, Constant: 1 
 	int Operand1 = 0; 
 	int Operand2 = 0;
 	
@@ -725,7 +725,7 @@ void generate_bool(FILE *fp, AST_Node_Bool *node){
 		}
 	}
 	
-	/* operation */
+	// operation 
 	switch(node->op){
 		case OR:
 			if (const_op == 1){
@@ -771,13 +771,13 @@ void generate_rel(FILE *fp, AST_Node_Rel *node, int invLogic, char* Label){
 	int const_op = 0;
 	int float_op = 0;
 	
-	/* GP: 0, FP: 1, Constant: 2, FP Constant: 3 */
+	// GP: 0, FP: 1, Constant: 2, FP Constant: 3 
 	int Operand1 = 0; 
 	int Operand2 = 0;
 	
 	AST_Node_Const *temp_const;
 
-	/* check left operand */
+	// check left operand 
 	if (expression_data_type(node->left) == REAL_TYPE){
 		float_op = 1;
 		if(node->left->type == CONST_NODE){
@@ -798,7 +798,7 @@ void generate_rel(FILE *fp, AST_Node_Rel *node, int invLogic, char* Label){
 		}
 	}
 
-	/* check right operand */
+	// check right operand 
 	if(expression_data_type(node->right) == REAL_TYPE){
 		float_op = 1;
 		if(node->right->type == CONST_NODE){
@@ -820,7 +820,7 @@ void generate_rel(FILE *fp, AST_Node_Rel *node, int invLogic, char* Label){
 	}
 	
 	
-	/* inverted logic */
+	// inverted logic 
 	int op;
 	if(invLogic == 1){
 		switch(node->op){
@@ -845,7 +845,7 @@ void generate_rel(FILE *fp, AST_Node_Rel *node, int invLogic, char* Label){
 		op = node->op;
 	}
 	
-	/* operation */
+	// operation 
 	switch(op){
 		case GREATER:
 			if(float_op == 1){
@@ -1139,13 +1139,13 @@ void generate_equ(FILE *fp, AST_Node_Equ *node, int invLogic, char* Label){
 	int const_op = 0;
 	int float_op = 0;
 	
-	/* GP: 0, FP: 1, Constant: 2, FP Constant: 3 */
+	// GP: 0, FP: 1, Constant: 2, FP Constant: 3 
 	int Operand1 = 0; 
 	int Operand2 = 0;
 	
 	AST_Node_Const *temp_const;
 
-	/* check left operand */
+	// check left operand 
 	if (expression_data_type(node->left) == REAL_TYPE){
 		float_op = 1;
 		if(node->left->type == CONST_NODE){
@@ -1166,7 +1166,7 @@ void generate_equ(FILE *fp, AST_Node_Equ *node, int invLogic, char* Label){
 		}
 	}
 
-	/* check right operand */
+	// check right operand 
 	if(expression_data_type(node->right) == REAL_TYPE){
 		float_op = 1;
 		if(node->right->type == CONST_NODE){
@@ -1187,10 +1187,10 @@ void generate_equ(FILE *fp, AST_Node_Equ *node, int invLogic, char* Label){
 		}
 	}
 	
-	/* inverted logic */
+	// inverted logic 
 	int op;
 	if(invLogic == 1){
-		/* EQUAL <-> NOT_EQUAL */
+		// EQUAL <-> NOT_EQUAL 
 		if(node->op == EQUAL){
 			op = NOT_EQUAL;
 		}
@@ -1202,7 +1202,7 @@ void generate_equ(FILE *fp, AST_Node_Equ *node, int invLogic, char* Label){
 		op = node->op;
 	}
 	
-	/* operation */
+	// operation 
 	switch(op){
 		case EQUAL:
 			if(float_op == 1){
@@ -1379,12 +1379,12 @@ void generate_assignment(FILE *fp, AST_Node_Assign *node){
 		case INT_TYPE:
 		case CHAR_TYPE:
 			if(expression_data_type(node->assign_val) == INT_TYPE){
-				/* constant */
+				// constant 
 				if(node->assign_val->type == CONST_NODE){
 					temp_const = (AST_Node_Const *) node->assign_val;
 					fprintf(fp, "LI %s, %d\n",  GetRegisterName(node->entry->g_index, 0), temp_const->val);
 				}
-				/* variable */
+				// variable 
 				else{
 					fprintf(fp, "MOVE %s, %s\n", GetRegisterName(node->entry->g_index, 0), GetRegisterName(getGraphIndex(node->assign_val), 0));
 				}
@@ -1394,7 +1394,7 @@ void generate_assignment(FILE *fp, AST_Node_Assign *node){
 					temp_const = (AST_Node_Const *) node->assign_val;					
 					fprintf(fp, "LI %s, %d\n", GetRegisterName(node->entry->g_index, 0), temp_const->val);	
 				}
-				/* variable */
+				// variable 
 				else{
 					fprintf(fp, "CVT.W.D %s, %s\n", GetRegisterName(getGraphIndex(node->assign_val), 1), GetRegisterName(getGraphIndex(node->assign_val), 1));
 					fprintf(fp, "MFC1 %s, %s\n", GetRegisterName(getGraphIndex(node->assign_val), 0), GetRegisterName(getGraphIndex(node->assign_val), 1));
@@ -1404,23 +1404,23 @@ void generate_assignment(FILE *fp, AST_Node_Assign *node){
 			break;
 		case REAL_TYPE:
 			if(expression_data_type(node->assign_val) == REAL_TYPE){
-				/* constant */
+				// constant 
 				if(node->assign_val->type == CONST_NODE){
 					temp_const = (AST_Node_Const *) node->assign_val;					
 					fprintf(fp, "LI.D %s, %.2f\n", GetRegisterName(node->entry->g_index, 1), temp_const->val);	
 				}
-				/* variable*/
+				// variable
 				else{
 					fprintf(fp, "mov.s %s, %s\n", GetRegisterName(node->entry->g_index, 1), GetRegisterName(getGraphIndex(node->assign_val), 1));
 				}
 			}
 			else{
-				/* constant */
+				// constant 
 				if(node->assign_val->type == CONST_NODE){
 					temp_const = (AST_Node_Const *) node->assign_val;					
 					fprintf(fp, "LI.D %s, %d.0\n", GetRegisterName(node->entry->g_index, 1), temp_const->val);	
 				}
-				/* variable*/
+				// variable
 				else{
 					fprintf(fp, "MTC1 %s, %s\n", GetRegisterName(getGraphIndex(node->assign_val), 0), GetRegisterName(getGraphIndex(node->assign_val), 1));
 					fprintf(fp, "CVT.D.W %s, %s\n", GetRegisterName(getGraphIndex(node->assign_val), 1), GetRegisterName(getGraphIndex(node->assign_val), 1));
@@ -1435,7 +1435,7 @@ void generate_assignment(FILE *fp, AST_Node_Assign *node){
 	}
 }
 
-/* Graph Functions */
+// Graph Functions 
 void initGraph(){
 	g = (AdjGraph*) malloc(sizeof(AdjGraph));
 	g->adj = NULL;
@@ -1451,7 +1451,7 @@ void insertEdge(int i, int j){
 		return;
 	}
 	
-	/* find max */
+	// find max 
 	int max;
 	if(i > j){
 		max = i;
@@ -1460,20 +1460,20 @@ void insertEdge(int i, int j){
 		max = j;
 	}
 
-	/* variable count is max + 1 */
+	// variable count is max + 1 
 	max = max + 1;
 
-	/* manage space */
-	if (g->vertexCount == 0){ /* first allocation */
+	// manage space 
+	if (g->vertexCount == 0){ // first allocation 
 		g->adj = (AdjList**) malloc(max * sizeof(AdjList*));
 		g->vertexCount = max;
 	}
-	else if(g->vertexCount < max){ /* allocate space for more variables */
+	else if(g->vertexCount < max){ // allocate space for more variables 
 		g->adj = (AdjList**) realloc(g->adj, max * sizeof(AdjList*));
 		g->vertexCount = max;
 	}
 	
-	/* insert edge i-j */
+	// insert edge i-j 
 	l = g->adj[i];
 	
 	while ((l != NULL) && (l->index != j)) l = l->next;
@@ -1485,7 +1485,7 @@ void insertEdge(int i, int j){
 		g->adj[i] = l;
 	}
 	
-	/* insert edge j-i */
+	// insert edge j-i 
 	l = g->adj[j];
 	
 	while ((l != NULL) && (l->index != i)) l = l->next;
@@ -1576,10 +1576,10 @@ int *greedyColoring(){
 	return colors;
 }
 
-/* Variable Array Functions */
+// Variable Array Functions 
 
 void insertVar(char *name){
-	/* first insertion */
+	// first insertion 
 	if(var_count == 0){
 		var_name = (char**) malloc(1 * sizeof(char*));
 		var_name[0] = (char*) malloc((strlen(name) + 1) * sizeof(char));		
@@ -1588,7 +1588,7 @@ void insertVar(char *name){
 		var_count++;
 	}
 	else{
-		/* check if variable already exists */
+		// check if variable already exists 
 		int flag = 0;
 		int i;
 		for(i = 0; i < var_count; i++){
@@ -1598,7 +1598,7 @@ void insertVar(char *name){
 			}
 		}
 		
-		/* not inserted yet */
+		// not inserted yet 
 		if(flag == 0){
 			var_name = (char**) realloc(var_name, (var_count + 1) * sizeof(char*));
 			var_name[var_count] = (char*) malloc((strlen(name) + 1) * sizeof(char));		
@@ -1632,7 +1632,7 @@ void printVarArray(){
 	printf("\n");
 }
 
-/* main function register allocation */
+// main function register allocation 
 void main_reg_allocation(AST_Node *node){
 	
 	AST_Node_Declarations *temp_declarations;
@@ -1645,35 +1645,35 @@ void main_reg_allocation(AST_Node *node){
 	AST_Node_While *temp_while;
 	AST_Node_Assign *temp_assign;
 	
-	/* temp variable name */
+	// temp variable name 
 	char name[MAXTOKENLEN];
 	
 	int i;
 	
-	/* check if empty */
+	// check if empty 
 	if(node == NULL){
 		return;
 	}
 	
 	switch(node->type){
-		/* declarations case */
+		// declarations case 
 		case DECLARATIONS:
 			temp_declarations = (struct AST_Node_Declarations *) node;	
 			for(i = 0; i < temp_declarations->declaration_count; i++){
 				main_reg_allocation(temp_declarations->declarations[i]);
 			}
 			break;
-		/* declaration case */
+		// declaration case 
 		case DECL_NODE:
 			temp_decl = (struct AST_Node_Decl *) node;
 			for(i = 0; i < temp_decl->names_count; i++){
 				insertVar(temp_decl->names[i]->st_name);
 				
-				/* graph index */
+				// graph index 
 				temp_decl->names[i]->g_index = getVarIndex(temp_decl->names[i]->st_name);
 			}
 			break;
-		/* left and right child cases */
+		// left and right child cases 
 		case BASIC_NODE:
 			main_reg_allocation(node->left);
 			main_reg_allocation(node->right);
@@ -1683,7 +1683,7 @@ void main_reg_allocation(AST_Node *node){
 			
 			main_reg_allocation(node->left);
 			main_reg_allocation(node->right);
-			/* insert temporary */
+			// insert temporary 
 			sprintf(name, "_temp%d", temp_count);
 			insertVar(name);
 			temp_count++;
@@ -1696,10 +1696,10 @@ void main_reg_allocation(AST_Node *node){
 			insert(name, strlen(name), temp_arithm->data_type, -1);
 			declare = 0;
 			
-			/* graph index */
+			// graph index 
 			temp_arithm->g_index = var_count - 1;
 			
-			/* manage graph */
+			// manage graph 
 			insertEdge(temp_arithm->g_index, getGraphIndex(temp_arithm->left));
 			
 			break;
@@ -1709,7 +1709,7 @@ void main_reg_allocation(AST_Node *node){
 			main_reg_allocation(node->left);
 			main_reg_allocation(node->right);
 		
-			/* insert temporary */
+			// insert temporary 
 			sprintf(name, "_temp%d", temp_count);
 			insertVar(name);
 			temp_count++;
@@ -1722,10 +1722,10 @@ void main_reg_allocation(AST_Node *node){
 			insert(name, strlen(name), temp_bool->data_type, -1);
 			declare = 0;
 			
-			/* graph index */
+			// graph index 
 			temp_bool->g_index = var_count - 1;
 			
-			/* manage graph */
+			// manage graph 
 			if(temp_bool->op != NOT){
 				insertEdge(temp_bool->g_index, getGraphIndex(temp_bool->left));
 				insertEdge(temp_bool->g_index, getGraphIndex(temp_bool->right));	
@@ -1737,27 +1737,27 @@ void main_reg_allocation(AST_Node *node){
 			
 			break;
 		case REL_NODE:			
-			/* used in branch and loop conditions - not stored */
+			// used in branch and loop conditions - not stored 
 			break;
 		case EQU_NODE:		
-			/* used in branch and loop conditions - not stored */
+			// used in branch and loop conditions - not stored 
 			break;
-		/* reference case */
+		// reference case 
 		case REF_NODE:
-			/* all the entries are already being managed by the Decl case */
+			// all the entries are already being managed by the Decl case 
 			break;
-		/* constant case */
+		// constant case 
 		case CONST_NODE:
-			/* already managed in getGraphIndex */
+			// already managed in getGraphIndex 
 			break;
-		/* statements case */
+		// statements case 
 		case STATEMENTS:
 			temp_statements = (struct AST_Node_Statements *) node;	
 			for(i = 0; i < temp_statements->statement_count; i++){
 				main_reg_allocation(temp_statements->statements[i]);
 			}
 			break;
-		/* the if case */
+		// the if case 
 		case IF_NODE:
 			temp_if = (struct AST_Node_If *) node;
 		
@@ -1777,7 +1777,7 @@ void main_reg_allocation(AST_Node *node){
 				main_reg_allocation(temp_if->else_branch);
 			}
 			break;
-		/* the else if case */
+		// the else if case 
 		case ELSIF_NODE:
 			temp_elsif = (struct AST_Node_Elsif *) node;
 			
@@ -1785,32 +1785,32 @@ void main_reg_allocation(AST_Node *node){
 			
 			main_reg_allocation(temp_elsif->elsif_branch);
 			break;
-		/* while case */
+		// while case 
 		case WHILE_NODE:
 			temp_while = (struct AST_Node_While *) node;
 			//main_reg_allocation(temp_while->condition);
 			
 			main_reg_allocation(temp_while->while_branch);
 			break;
-		/* assign case */
+		// assign case 
 		case ASSIGN_NODE:
 			temp_assign = (struct AST_Node_Assign *) node;
 			
-			/* manage graph */
+			// manage graph 
 			insertEdge(temp_assign->entry->g_index, getGraphIndex(temp_assign->assign_val));
 			
 			main_reg_allocation(temp_assign->assign_val);
 			break;
-		/* simple case */
+		// simple case 
 		case SIMPLE_NODE:
 			break;
-		default: /* wrong choice case */
+		default: // wrong choice case 
 			fprintf(stderr, "Error in node selection!\n");
 			exit(1);
 	}
 }
 
-/* main function tree traversal */
+// main function tree traversal 
 void main_func_traversal(FILE *fp, AST_Node *node){
 	int i;
 	
@@ -1827,24 +1827,24 @@ void main_func_traversal(FILE *fp, AST_Node *node){
 	AST_Node_While *temp_while;
 	AST_Node_Assign *temp_assign;
 	
-	/* temp variable ST entry */
+	// temp variable ST entry 
 	list_t *entry;
 	
-	/* check if empty */
+	// check if empty 
 	if(node == NULL){
 		return;
 	}	
 	
 	switch(node->type){
-		/* declarations case */
+		// declarations case 
 		case DECLARATIONS:
-			/* nothing */
+			// nothing 
 			break;
-		/* declaration case */
+		// declaration case 
 		case DECL_NODE:
-			/* nothing */
+			// nothing 
 			break;
-		/* left and right child cases */
+		// left and right child cases 
 		case BASIC_NODE:
 			main_func_traversal(fp, node->left);
 			main_func_traversal(fp, node->right);
@@ -1885,25 +1885,25 @@ void main_func_traversal(FILE *fp, AST_Node *node){
 			generate_equ(fp, temp_equ, 1, "Temp_Label");
 			
 			break;
-		/* reference case */
+		// reference case 
 		case REF_NODE:
 			temp_ref = (struct AST_Node_Ref *) node;
 			
-			/* load value from memory to register */
+			// load value from memory to register 
 			generate_load(fp, temp_ref);
 			break;
-		/* constant case */
+		// constant case 
 		case CONST_NODE:
-			/* already managed in the various generation functions */
+			// already managed in the various generation functions 
 			break;
-		/* statements case */
+		// statements case 
 		case STATEMENTS:
 			temp_statements = (struct AST_Node_Statements *) node;	
 			for(i = 0; i < temp_statements->statement_count; i++){
 				main_func_traversal(fp, temp_statements->statements[i]);
 			}
 			break;
-		/* the if case */
+		// the if case 
 		case IF_NODE:
 			temp_if = (struct AST_Node_If *) node;
 		
@@ -1923,7 +1923,7 @@ void main_func_traversal(FILE *fp, AST_Node *node){
 				main_func_traversal(fp, temp_if->else_branch);
 			}
 			break;
-		/* the else if case */
+		// the else if case 
 		case ELSIF_NODE:
 			temp_elsif = (struct AST_Node_Elsif *) node;
 			
@@ -1931,7 +1931,7 @@ void main_func_traversal(FILE *fp, AST_Node *node){
 			
 			main_func_traversal(fp, temp_elsif->elsif_branch);
 			break;
-		/* while case */
+		// while case 
 		case WHILE_NODE:
 			temp_while = (struct AST_Node_While *) node;
 			
@@ -1939,7 +1939,7 @@ void main_func_traversal(FILE *fp, AST_Node *node){
 			
 			main_func_traversal(fp, temp_while->while_branch);
 			break;
-		/* assign case */
+		// assign case 
 		case ASSIGN_NODE:
 			temp_assign = (struct AST_Node_Assign *) node;
 			
@@ -1948,12 +1948,12 @@ void main_func_traversal(FILE *fp, AST_Node *node){
 			generate_assignment(fp, temp_assign);
 			
 			break;
-		/* simple case */
+		// simple case 
 		case SIMPLE_NODE:
 			generate_simple(fp, "Temp_Label");
 			
 			break;
-		default: /* wrong choice case */
+		default: // wrong choice case 
 			fprintf(stderr, "Error in node selection!\n");
 			exit(1);
 	}

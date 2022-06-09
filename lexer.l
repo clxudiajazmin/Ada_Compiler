@@ -117,7 +117,7 @@ CHARCONST		(\'{PRINT}\')|(\'\\[nftrbv]\')
 
 "\n"			{ lineno += 1; }
 
-[ \t\r\f]+			/* eat up whitespace */
+[ \t\r\f]+			// eat up whitespace 
 
 .				{ yyerror("No reconocido"); }
 

@@ -25,7 +25,7 @@
 	int elseif_count = 0;
 %}
 
-/* YYSTYPE union */
+// YYSTYPE union 
 %union{
 	// different types of values
 	Value val;   
@@ -87,8 +87,8 @@
 
 %%
 
-/* procedure: PROC IDENT IS declarations BEG statements END IDENT SEMI */
-/* ; */
+// procedure: PROC IDENT IS declarations BEG statements END IDENT SEMI 
+// ; 
 
 procedure: PROC IDENT IS declarations BEG statements END IDENT SEMI
 	{ 	
@@ -117,7 +117,7 @@ declarations: declarations declaration
 	{
 		$$ = new_declarations_node(NULL, 0, $1);
 	}
-| /* empty */
+| // empty 
 ;
 
 declaration: names INI type SEMI
@@ -177,17 +177,17 @@ statements: statements statement
 
 statement: assigment 
 	{
-		$$ = $1; /* just pass information */
+		$$ = $1; // just pass information 
 	}
 | if_statement 
 	{ 
-		$$ = $1; /* just pass information */
+		$$ = $1; // just pass information 
 	}
 | while_statement
 	{ 
-	$$ = $1; /* just pass information */
+	$$ = $1; // just pass information 
 	}
-| put_statement { $$ = NULL; /* will do it later ! */ }
+| put_statement { $$ = NULL; /* will do it later ! */}
 | get_statement { $$ = NULL; /* will do it later ! */ }
 | new_line_statement { $$ = NULL; /* will do it later ! */ }
 ;
@@ -219,12 +219,12 @@ elsif_part: elsif_part ELSIF expression THEN statements
 
 else_part: ELSE statements
 	{
-		/* else exists */
+		// else exists 
 		$$ = $2;
 	}
-| /* empty */ 
+| // empty  
 	{
-		/* no else */
+		// no else 
 		$$ = NULL;
 	}
 ; 
@@ -288,19 +288,19 @@ expression: expression ADDOP expression
 	}
 | LPAREN expression RPAREN
 	{ 
-		$$ = $2; /* just pass information */
+		$$ = $2; // just pass information 
 	}
 | var_ref
 	{ 
-		$$ = $1; /* just pass information */
+		$$ = $1; // just pass information 
 	}
 | sign constant
 	{
-		/* sign */
+		// sign 
 		if($1.ival == 1){
 			AST_Node_Const *temp = (AST_Node_Const*) $2;
 		
-			/* inverse value depending on the constant type */
+			// inverse value depending on the constant type 
 			switch(temp->const_type){
 				case INT_TYPE:
 					temp->val.ival *= -1;
@@ -309,7 +309,7 @@ expression: expression ADDOP expression
 					temp->val.fval *= -1;
 					break;
 				case CHAR_TYPE:
-					/* sign before char error */
+					// sign before char error 
 					fprintf(stderr, "Error having sign before character constant!\n");
 					exit(1);
 					break;
@@ -317,7 +317,7 @@ expression: expression ADDOP expression
 			
 			$$ = (AST_Node*) temp;
 		}
-		/* no sign */
+		// no sign 
 		else{
 			$$ = $2;
 		}
@@ -327,18 +327,18 @@ expression: expression ADDOP expression
 
 sign: ADDOP
 	{ 
-		/* plus sign error */
+		// plus sign error 
 		if($1.ival == ADD){
 			fprintf(stderr, "Error having plus as a sign!\n");
 			exit(1);
 		}
 		else{
-			$$.ival = 1; /* sign */
+			$$.ival = 1; // sign 
 		}
 	}
-	| /* empty */
+	| // empty 
 	{ 
-		$$.ival = 0; /* no sign */
+		$$.ival = 0; // no sign 
 	} 
 ;
 
@@ -349,16 +349,16 @@ assigment: var_ref ASSIGN expression SEMI
 
 	// check assignment semantics
   	get_result_type(
-    	get_type(temp->entry->st_name), /* variable datatype */
-    	expression_data_type($3),       /* expression datatype */
-    	NONE  /* checking compatibility only (no operator) */
+    	get_type(temp->entry->st_name), // variable datatype 
+    	expression_data_type($3),       // expression datatype 
+    	NONE  // checking compatibility only (no operator) 
   	);
 }
 ;
 
 var_ref: name
 	{
-		$$ = new_ast_ref_node($1, 0); /* no reference */
+		$$ = new_ast_ref_node($1, 0); // no reference 
 	}
 
 %%
