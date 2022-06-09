@@ -1,0 +1,51 @@
+Nodo de declaración con 7 declaraciones
+Nodo Constante de const-type 1 con valor 0
+Nodo Constante de const-type 1 con valor 4
+Nodo Constante de const-type 1 con valor 100
+Nodo de declaración de data-type 1 para 7 nombres
+Nodo de declaración de data-type 2 para 9 nombres
+Nodo Constante de const-type 2 con valor 9.70
+Nodo Constante de const-type 2 con valor 7.20
+Nodo de Statements con 7 statements
+Nodo de Asignación de entrada A
+Asignando:
+Nodo de referencia de entrada A
+Nodo Constante de const-type 1 con valor 1
+Nodo Aritmético con operador 0 con resultado de tipo 1
+Nodo de Asignación de entrada D
+Asignando:
+Nodo de referencia de entrada A
+Nodo de referencia de entrada B
+Nodo Aritmético con operador 0 con resultado de tipo 1
+Nodo de referencia de entrada C
+Nodo Aritmético con operador 0 con resultado de tipo 1
+Nodo de Asignación de entrada E
+Asignando:
+Nodo de referencia de entrada A
+Nodo de referencia de entrada B
+Nodo Aritmético con operador 1 con resultado de tipo 1
+Nodo de referencia de entrada C
+Nodo Aritmético con operador 0 con resultado de tipo 1
+Nodo de Asignación de entrada F
+Asignando:
+Nodo de referencia de entrada A
+Nodo de referencia de entrada B
+Nodo Aritmético con operador 2 con resultado de tipo 1
+Nodo de referencia de entrada C
+Nodo Aritmético con operador 2 con resultado de tipo 1
+Nodo de Asignación de entrada G
+Asignando:
+Nodo de referencia de entrada A
+Nodo de referencia de entrada B
+Nodo Aritmético con operador 3 con resultado de tipo 1
+Nodo de Asignación de entrada H
+Asignando:
+Nodo de referencia de entrada K
+Nodo de referencia de entrada J
+Nodo Aritmético con operador 2 con resultado de tipo 2
+Nodo de Asignación de entrada I
+Asignando:
+Nodo de referencia de entrada K
+Nodo de referencia de entrada J
+Nodo Aritmético con operador 0 con resultado de tipo 2
+Parsing finished!
