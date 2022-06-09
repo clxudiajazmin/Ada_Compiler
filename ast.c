@@ -481,7 +481,7 @@ void ast_print_node(AST_Node *node){
 			break;
 		case STATEMENTS:
 			temp_statements = (struct AST_Node_Statements *) node;
-			fprintf(fp, "Nodo de Statements con %d statements\n", temp_statements->statement_count);
+			printf("Nodo de Statements con %d statements\n", temp_statements->statement_count);
 			break;
 		case IF_NODE:
 			temp_if = (struct AST_Node_If *) node;

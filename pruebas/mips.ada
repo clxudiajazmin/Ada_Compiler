@@ -6,4 +6,4 @@ procedure Main is
 begin
    A := A + 2;
    B := B + D;
-end test;
+end Main;

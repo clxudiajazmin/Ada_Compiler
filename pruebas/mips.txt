@@ -1,0 +1,17 @@
+Nodo de declaración con 4 declaraciones
+Nodo Constante de const-type 1 con valor 6
+Nodo Constante de const-type 2 con valor 4.50
+Nodo Constante de const-type 1 con valor 9
+Nodo Constante de const-type 2 con valor 5.60
+Nodo de Statements con 2 statements
+Nodo de Asignación de entrada A
+Asignando:
+Nodo de referencia de entrada A
+Nodo Constante de const-type 1 con valor 2
+Nodo Aritmético con operador 0 con resultado de tipo 1
+Nodo de Asignación de entrada B
+Asignando:
+Nodo de referencia de entrada B
+Nodo de referencia de entrada D
+Nodo Aritmético con operador 0 con resultado de tipo 2
+Parsing finished!

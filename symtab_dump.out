@@ -1,15 +1,7 @@
 ------------ -------------- ------ ------------
 Nombre         Tipo           Scope  N linea	
 ------------ -------------- ------ ------------
-A            int              0     2   10   10   12   13   14   15 
-B            int              0     3   12   13   14   15 
-C            int              0     4   12   13   14 
-D            int              0     5   12 
-E            int              0     5   13 
-F            int              0     5   14 
-G            int              0     5   15 
-H            real             0     6   17 
-I            real             0     6   18 
-J            real             0     8   17   18 
-K            real             0     7   17   18 
-Main         undef            0     1   19 
+a            char             0     2    6    6 
+b            real             0     3    7 
+c            real             0     4    7    7 
+Main         undef            0     1    9 
