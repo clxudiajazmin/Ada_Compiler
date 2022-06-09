@@ -3,7 +3,7 @@
 /* main assembly code generation function */
 void generate_code(){	
 	FILE *fp;
-	fp = fopen("out.s", "w");
+	fp = fopen("out.asm", "w");
 	
 	generate_data_declarations(fp);
 	
@@ -254,7 +254,7 @@ void generate_arithm(FILE *fp, AST_Node_Arithm *node){
 					fprintf(fp, "CVT.D.W $f30, $f30\n");
 				}
 				
-				fprintf(fp, "ADD.D ");
+				fprintf(fp, "add.s ");
 				
 				/* check if result needs conversion */
 				if(Result == 0){
@@ -1354,7 +1354,7 @@ void generate_equ(FILE *fp, AST_Node_Equ *node, int invLogic, char* Label){
 
 void generate_load(FILE *fp, AST_Node_Ref *node){
 	if(node->entry->st_type == REAL_TYPE){
-		fprintf(fp, "L.D %s, %s\n", GetRegisterName(node->entry->g_index, 1), node->entry->st_name);	
+		fprintf(fp, "lwc1 %s, %s\n", GetRegisterName(node->entry->g_index, 1), node->entry->st_name);	
 	}
 	else{
 		if(node->ref == 1){
@@ -1411,7 +1411,7 @@ void generate_assignment(FILE *fp, AST_Node_Assign *node){
 				}
 				/* variable*/
 				else{
-					fprintf(fp, "MOV.D %s, %s\n", GetRegisterName(node->entry->g_index, 1), GetRegisterName(getGraphIndex(node->assign_val), 1));
+					fprintf(fp, "mov.s %s, %s\n", GetRegisterName(node->entry->g_index, 1), GetRegisterName(getGraphIndex(node->assign_val), 1));
 				}
 			}
 			else{

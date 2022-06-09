@@ -2,6 +2,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+void write(char* texto){
+	FILE *fp;
+	fp = fopen("out.asm", "w");
+	fprintf(fp, texto);
+}
 /* flag variable that shows revisit in assignment expression */
 int cont_revisit = 0; // 1: contains revisit, 0: not
 
@@ -476,7 +481,7 @@ void ast_print_node(AST_Node *node){
 			break;
 		case STATEMENTS:
 			temp_statements = (struct AST_Node_Statements *) node;
-			printf("Nodo de Statements con %d statements\n", temp_statements->statement_count);
+			fprintf(fp, "Nodo de Statements con %d statements\n", temp_statements->statement_count);
 			break;
 		case IF_NODE:
 			temp_if = (struct AST_Node_If *) node;
