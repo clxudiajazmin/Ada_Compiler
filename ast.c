@@ -164,6 +164,15 @@ AST_Node *new_ast_assign_node(list_t *entry, int ref, AST_Node *assign_val){
 	return (struct AST_Node *) v;
 }
 
+
+AST_Node *new_ast_proc_node( Value val){
+	AST_Node_Proc *v = malloc (sizeof (AST_Node_Proc));
+	v->val = val;
+	
+	// return type-casted result
+	return (struct AST_Node *) v;
+}
+
 AST_Node *new_ast_simple_node(int statement_type){
 	// allocate memory
 	AST_Node_Simple *v = malloc (sizeof (AST_Node_Simple));

@@ -105,7 +105,7 @@ CHARCONST		(\'{PRINT}\')|(\'\\[nftrbv]\')
 {IDENT}         { 	insert(yytext, strlen(yytext), UNDEF, lineno);
         			yylval.symtab_item = lookup(yytext);
         			return IDENT;
-				}
+				}							
 {INTCONST} 		{ yylval.val.ival = atoi(yytext); return INTCONST; }
 {FLOATCONST} 	{ yylval.val.fval = atof(yytext); return FLOATCONST; }
 {STRING} 		{ add_to_str_messages(yytext);

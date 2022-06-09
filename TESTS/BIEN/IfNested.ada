@@ -1,16 +1,10 @@
-procedure test is
-   a, b : Integer;      
-   c : Float := 2.3;     
-
+procedure Main is
+   int1: Integer;
+   int2: Integer;
 begin
-   if a = b then
-      a := 2;
-      c := 9.3;
-   elsif c = 5.2 then
-      a := b;
-   elsif b < a then
-      b := 6;
-   else
-      b := 8;
-   end if;
-end test;
+   int1:=5;
+   int2:=8;
+   if int1<int2 then
+	int1:= 5 + 5;
+   end if
+end Main

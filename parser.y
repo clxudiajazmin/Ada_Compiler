@@ -94,8 +94,16 @@
 
 procedure: PROC IDENT IS declarations BEG statements END IDENT SEMI
 	{ 	
-		main_decl_tree = $4; ast_traversal($4); 
-	 	main_func_tree = $6; ast_traversal($6); 
+		AST_Node_Proc *tempi = (AST_Node_Proc*) $2;
+		AST_Node_Proc *tempf = (AST_Node_Proc*) $8;
+		if(tempi->val.sval == tempf->val.sval){
+			main_decl_tree = $4; ast_traversal($4); 
+			main_func_tree = $6; ast_traversal($6); 
+		}else{
+			yyerror("No coinciden los nombres del procedimiento");
+			exit(0);
+		}
+		
 	}
 	
 ;
@@ -254,7 +262,12 @@ expression: expression ADDOP expression
 	}
 | expression DIVOP expression
 	{
-		$$ = new_ast_arithm_node(DIV, $1, $3);
+		AST_Node_Const *tempdiv = (AST_Node_Const*) $3;
+		if(tempdiv->val.ival == 0 || tempdiv->val.fval == 0.00){
+			yyerror("No se puede dividir por 0");
+		}else{
+			$$ = new_ast_arithm_node(DIV, $1, $3);
+		}
 	}
 | expression ANDOP expression
 	{
@@ -383,8 +396,9 @@ void add_elseif(AST_Node *elsif){
 	}
 }
 
-void yyerror ()
+void yyerror (char* error)
 {
+  fprintf(stderr, "Error  %s\n", error);
   fprintf(stderr, "Error de sintaxis en linea %d\n", lineno);
   yylex();
   exit(1);

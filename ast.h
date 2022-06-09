@@ -154,6 +154,11 @@ typedef struct AST_Node_Simple{
 	int statement_type;
 }AST_Node_Simple;
 
+typedef struct AST_Node_Proc{
+	// constant value
+	Value val;
+}AST_Node_Proc;
+
 /* Expressions */
 typedef struct AST_Node_Arithm{
 	enum Node_Type type; // node type
