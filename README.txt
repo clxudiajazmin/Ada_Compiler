@@ -9,6 +9,6 @@ En caso de no tener instalado la herramienta homebrew, será necesario correr pr
 $ ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 
 
-Ejecute el archivo comp.sh con un parámetro que sea el nombre del archivo .ada que desee compilar
+Ejecute el archivo comp.sh de la carpeta src con un parámetro que sea el nombre del archivo .ada que desee compilar
 De forma que quede por ejemplo:
 sh comp.sh  IfNested.ada
