@@ -1,14 +1,14 @@
-// maximum size of hash table 
+/* maximum size of hash table */
 #define SIZE 211
 
-// maximum size of tokens-identifiers 
+/* maximum size of tokens-identifiers */
 #define MAXTOKENLEN 40
 
-// how parameter is passed 
+/* how parameter is passed */
 #define BY_VALUE 1
 #define BY_REFER 2
 
-// Types of values that we can have 
+/* Types of values that we can have */
 typedef union Value{
 	int ival;
 	double fval;
@@ -16,7 +16,7 @@ typedef union Value{
 	char *sval;
 }Value;
 
-// parameter struct 
+/* parameter struct */
 typedef struct Param{
 	// parameter type and name
 	int par_type;
@@ -27,7 +27,7 @@ typedef struct Param{
 	int passing; // value or reference
 }Param;
 
-// a linked list of references (lineno's) for each variable 
+/* a linked list of references (lineno's) for each variable */
 typedef struct RefList{ 
     int lineno;
     struct RefList *next;
@@ -47,7 +47,7 @@ typedef struct list_t{
 	// type
     int st_type;
 	
-	// register assignment stuff 
+	/* register assignment stuff */
 	int g_index;
 	int reg_name;
     
@@ -67,7 +67,7 @@ typedef struct list_t{
 	struct list_t *next;
 }list_t;
 
-// Queue of identifiers to revisit 
+/* Queue of identifiers to revisit */
 typedef struct revisit_queue{
 	// symbol table entry
 	list_t *entry;
@@ -92,11 +92,11 @@ typedef struct revisit_queue{
 	struct revisit_queue *next;
 }revisit_queue;
 
-// revisit types 
-#define PARAM_CHECK 1  // Check parameters of function call when functions gets declared 
-#define ASSIGN_CHECK 2 // Check assignment when function call part of the expression 
+/* revisit types */
+#define PARAM_CHECK 1  /* Check parameters of function call when functions gets declared */
+#define ASSIGN_CHECK 2 /* Check assignment when function call part of the expression */
 
-// static structures 
+/* static structures */
 static list_t **hash_table;
 static revisit_queue *queue;
 static char **str_messages;

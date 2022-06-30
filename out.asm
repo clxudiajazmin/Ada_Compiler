@@ -1,19 +1,20 @@
 .data
 # variables
-A: .word 6
-B: .float 4.500000
-C: .word 9
-D: .float 5.600000
-letra: .byte 'e'
+a: .byte 'c'
+b: .float 2.500000
+c: .float 7.200000
 # messages
-msg1: .asciiz "Compiladores"
 
 .text
 main:
-LW $s0, A($0)
-ADDI $s0, $s0, 2
-MOVE $s0, $s0
-lwc1 $f0, B
-lwc1 $f0, D
+BEQ $s0, 99, Temp_Label
+BNE $s0, 98, Temp_Label
+AND $s0, $s0, $s0
+li $v0, 10
+syscall
+Temp_Label: 
 add.s $f2, $f0 $f0 
 mov.s $f0, $f2
+li $v0, 1
+add $a0, $zero, $s1
+syscall

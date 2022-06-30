@@ -64,7 +64,6 @@
 %left OROP
 %left ANDOP
 %left EQUOP
-%left RELOP
 %left ADDOP
 %left MULOP DIVOP
 %right NOTOP INCR

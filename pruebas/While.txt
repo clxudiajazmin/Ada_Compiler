@@ -1,34 +1,23 @@
-Nodo de declaración con 4 declaraciones
-Nodo de declaración de data-type 3 para 1 nombres
-Nodo Constante de const-type 2 con valor 2.50
-Nodo Constante de const-type 2 con valor 7.20
-Nodo de declaración de data-type 4 para 4 nombres
-Nodo de Statements con 1 statements
+Nodo de declaración con 2 declaraciones
+Nodo de declaración de data-type 1 para 1 nombres
+Nodo de declaración de data-type 1 para 2 nombres
+Nodo de Statements con 3 statements
+Nodo de Asignación de entrada A
+Asignando:
+Nodo Constante de const-type 1 con valor 5
+Nodo de Asignación de entrada B
+Asignando:
+Nodo Constante de const-type 1 con valor 7
 Nodo While
 Condición:
-Nodo de referencia de entrada b
-Nodo Constante de const-type 2 con valor 5.00
-Nodo relacional de operador 1
-While branch:
-Nodo de Statements con 2 statements
-Nodo If con 0 elseifs y no else
-Condición:
-Nodo de referencia de entrada a
-Nodo Constante de const-type 3 con valor c
+Nodo de referencia de entrada A
+Nodo de referencia de entrada B
 Nodo de igualdad de operador 0
-If branch:
-Nodo de Statements con 2 statements
-Nodo de Asignación de entrada c
+While branch:
+Nodo de Statements con 1 statements
+Nodo de Asignación de entrada A
 Asignando:
-Nodo de referencia de entrada c
-Nodo Constante de const-type 2 con valor 1.00
-Nodo Aritmético con operador 0 con resultado de tipo 2
-Nodo de Asignación de entrada texto
-Asignando:
-Nodo Constante de const-type 4 con valor "Adios"
-Nodo de Asignación de entrada b
-Asignando:
-Nodo de referencia de entrada b
-Nodo Constante de const-type 2 con valor 0.50
-Nodo Aritmético con operador 0 con resultado de tipo 2
+Nodo de referencia de entrada A
+Nodo Constante de const-type 1 con valor 1
+Nodo Aritmético con operador 0 con resultado de tipo 1
 Parsing finished!

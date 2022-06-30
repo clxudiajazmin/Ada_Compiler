@@ -1,0 +1,19 @@
+Nodo de declaración con 1 declaraciones
+Nodo de declaración de data-type 1 para 1 nombres
+Nodo de Statements con 2 statements
+Nodo de Asignación de entrada int1
+Asignando:
+Nodo Constante de const-type 1 con valor 5
+Nodo If con 0 elseifs y no else
+Condición:
+Nodo de referencia de entrada int1
+Nodo Constante de const-type 1 con valor 8
+Nodo relacional de operador 1
+If branch:
+Nodo de Statements con 1 statements
+Nodo de Asignación de entrada int1
+Asignando:
+Nodo de referencia de entrada int1
+Nodo Constante de const-type 1 con valor 5
+Nodo Aritmético con operador 0 con resultado de tipo 1
+Parsing finished!

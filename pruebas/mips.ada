@@ -1,11 +1,10 @@
 procedure Main is
-   A    : Integer := 6;
-   B    : Float:= 4.5;
-   C    : Integer := 9;
-   D    : Float := 5.6;
-   asignatura : String := "Compiladores";
-   letra : Character := 'e';
+   A : Integer;
+   B: Integer;
 begin
-   A := A + 2;
-   B := B + D;
+   A := 5;
+   B := 7;
+   while A = B loop
+      A := A + 1;
+   end loop;
 end Main;

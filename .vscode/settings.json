@@ -3,7 +3,9 @@
         "semantics.h": "c",
         "__node_handle": "c",
         "ios": "c",
-        "symtab.h": "c"
+        "symtab.h": "c",
+        "mips.h": "c",
+        "mips1.C": "cpp"
     },
     "C_Cpp.errorSquiggles": "Disabled"
 }

@@ -1,5 +1,5 @@
 #include "mips.h"
-
+int general = 0;
 // main assembly code generation function 
 void generate_code(){	
 	FILE *fp;
@@ -844,7 +844,6 @@ void generate_rel(FILE *fp, AST_Node_Rel *node, int invLogic, char* Label){
 	else{
 		op = node->op;
 	}
-	
 	// operation 
 	switch(op){
 		case GREATER:
@@ -1873,7 +1872,7 @@ void main_func_traversal(FILE *fp, AST_Node *node){
 			main_func_traversal(fp, node->left);
 			main_func_traversal(fp, node->right);
 		
-			generate_rel(fp, temp_rel, 1, "Temp_Label");
+			generate_rel(fp, temp_rel, 0, "Temp_Label");
 			
 			break;
 		case EQU_NODE:
@@ -1882,15 +1881,13 @@ void main_func_traversal(FILE *fp, AST_Node *node){
 			main_func_traversal(fp, node->left);
 			main_func_traversal(fp, node->right);
 		
-			generate_equ(fp, temp_equ, 1, "Temp_Label");
+			generate_equ(fp, temp_equ, 0, "Temp_Label");
 			
 			break;
 		// reference case 
 		case REF_NODE:
 			temp_ref = (struct AST_Node_Ref *) node;
 			
-			// load value from memory to register 
-			generate_load(fp, temp_ref);
 			break;
 		// constant case 
 		case CONST_NODE:
@@ -1905,24 +1902,31 @@ void main_func_traversal(FILE *fp, AST_Node *node){
 			break;
 		// the if case 
 		case IF_NODE:
-			temp_if = (struct AST_Node_If *) node;
-		
-			//main_func_traversal(fp, temp_if->condition);
-		
-			main_func_traversal(fp, temp_if->if_branch);
+            temp_if = (struct AST_Node_If *) node;
+        
+            main_func_traversal(fp, temp_if->condition);
+            fprintf(fp, "li $v0, 10\n");
+            fprintf(fp, "syscall\n");
+            fprintf(fp, "Temp_Label: \n");
 
-			
-		
-			if(temp_if->elseif_count > 0 ){
-				for(i = 0; i < temp_if->elseif_count; i++){
-					main_func_traversal(fp, temp_if->elsif_branches[i]);
-				}	
-			}
-	
-			if(temp_if->else_branch != NULL){
-				main_func_traversal(fp, temp_if->else_branch);
-			}
-			break;
+            main_func_traversal(fp, temp_if->if_branch);
+            fprintf(fp, "li $v0, 1\n");
+            fprintf(fp, "add $a0, $zero, $s1\n");
+            fprintf(fp, "syscall");
+            
+        
+            if(temp_if->elseif_count > 0 ){
+                for(i = 0; i < temp_if->elseif_count; i++){
+                    main_func_traversal(fp, temp_if->elsif_branches[i]);
+                }   
+            }
+    
+            if(temp_if->else_branch != NULL){
+                main_func_traversal(fp, temp_if->else_branch);
+            }
+            break;
+
+
 		// the else if case 
 		case ELSIF_NODE:
 			temp_elsif = (struct AST_Node_Elsif *) node;
@@ -1933,12 +1937,19 @@ void main_func_traversal(FILE *fp, AST_Node *node){
 			break;
 		// while case 
 		case WHILE_NODE:
-			temp_while = (struct AST_Node_While *) node;
-			
-			main_func_traversal(fp, temp_while->condition);
-			
-			main_func_traversal(fp, temp_while->while_branch);
-			break;
+            temp_while = (struct AST_Node_While *) node;
+            fprintf(fp, "while:\n");
+            main_func_traversal(fp, temp_while->condition);
+            main_func_traversal(fp, temp_while->while_branch);
+			fprintf(fp, "li $v0, 1\n");
+			fprintf(fp, "add $a0, $s2, $zero\n");
+			fprintf(fp, "syscall\n");
+            fprintf(fp, "j while\n");
+            fprintf(fp, "Temp_Label: \n");
+            fprintf(fp, "li $v0, 10\n");
+			fprintf(fp, "syscall\n");
+            break;
+
 		// assign case 
 		case ASSIGN_NODE:
 			temp_assign = (struct AST_Node_Assign *) node;

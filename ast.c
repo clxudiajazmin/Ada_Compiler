@@ -2,11 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-void write(char* texto){
-	FILE *fp;
-	fp = fopen("out.asm", "w");
-	fprintf(fp, texto);
-}
 // flag variable that shows revisit in assignment expression 
 int cont_revisit = 0; // 1: contains revisit, 0: not
 
