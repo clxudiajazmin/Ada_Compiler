@@ -1,7 +1,10 @@
 ------------ -------------- ------ ------------
 Nombre         Tipo           Scope  N linea	
 ------------ -------------- ------ ------------
-a            char             1     2    6    6 
-b            real             2     3    7 
-c            real             3     4    7    7 
-Main         undef            0     1    9 
+asignatura   undef            5     6 
+A            int              1     2    9    9   10 
+B            real             2     3   13   13   14 
+C            int              3     4   11   11   12 
+D            real             4     5   13 
+letra        char             6     7 
+Main         undef            0     1   15 

@@ -186,9 +186,9 @@ statement: assigment
 	{ 
 	$$ = $1; // just pass information 
 	}
-| put_statement { $$ = NULL; /* will do it later ! */}
-| get_statement { $$ = NULL; /* will do it later ! */ }
-| new_line_statement { $$ = NULL; /* will do it later ! */ }
+| put_statement { $$ = $1; }
+| get_statement { $$ = NULL; }
+| new_line_statement { $$ = NULL; }
 ;
 
 
@@ -233,9 +233,9 @@ while_statement: WHILE expression LOOP statements END LOOP SEMI
 	$$ = new_ast_while_node($2, $4);
 }
 
-put_statement: PUT LPAREN expression RPAREN SEMI
+put_statement: PUT LPAREN name RPAREN SEMI
 	{
-		$$ = $3;
+		$$ = new_ast_put_node($3);
 	}
 ;
 

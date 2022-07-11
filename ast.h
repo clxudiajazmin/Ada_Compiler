@@ -19,6 +19,7 @@ typedef enum Node_Type {
 	REL_NODE,     // 16 - relational expression
 	EQU_NODE,     // 17 - equality expression
 	REF_NODE,	  // 18 - identifier in expression
+	PUT_NODE,
 }Node_Type;
 
 // --------------------OPERATOR TYPES----------------------- 
@@ -234,6 +235,14 @@ typedef struct AST_Node_Ref{
 	int ref; // 0: not reference, 1: reference
 }AST_Node_Ref;
 
+typedef struct AST_Node_Put{
+	enum Node_Type type; // node type
+	
+	// symbol table entry
+	list_t *entry;
+	
+}AST_Node_Put;
+
 // Static AST Structures 
 static AST_Node* main_decl_tree; // main function's declarations AST Tree 
 static AST_Node* main_func_tree; // main function's statements AST Tree 
@@ -257,6 +266,7 @@ AST_Node *new_ast_elsif_node(AST_Node *condition, AST_Node *elsif_branch);
 AST_Node *new_ast_while_node(AST_Node *condition, AST_Node *while_branch);
 AST_Node *new_ast_assign_node(list_t *entry, int ref, AST_Node *assign_val);
 AST_Node *new_ast_simple_node(int statement_type);
+AST_Node *new_ast_put_node(list_t *entry);
 
 // Expressions 
 AST_Node *new_ast_arithm_node(enum Arithm_op op, AST_Node *left, AST_Node *right);

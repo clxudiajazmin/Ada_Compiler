@@ -12,13 +12,13 @@ Nodo If con 0 elseifs y no else
 Condición:
 Nodo de referencia de entrada int1
 Nodo de referencia de entrada int2
-Nodo relacional de operador 1
+Nodo relacional de operador 0
 If branch:
 Nodo de Statements con 2 statements
 Nodo de Asignación de entrada int1
 Asignando:
 Nodo de referencia de entrada int1
-Nodo Constante de const-type 1 con valor 2
+Nodo Constante de const-type 1 con valor 5
 Nodo Aritmético con operador 0 con resultado de tipo 1
 Nodo de put con entrada int1
 Parsing finished!

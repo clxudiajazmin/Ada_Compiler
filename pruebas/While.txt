@@ -7,17 +7,18 @@ Asignando:
 Nodo Constante de const-type 1 con valor 5
 Nodo de Asignación de entrada B
 Asignando:
-Nodo Constante de const-type 1 con valor 7
+Nodo Constante de const-type 1 con valor 10
 Nodo While
 Condición:
 Nodo de referencia de entrada A
 Nodo de referencia de entrada B
-Nodo de igualdad de operador 0
+Nodo relacional de operador 1
 While branch:
-Nodo de Statements con 1 statements
+Nodo de Statements con 2 statements
 Nodo de Asignación de entrada A
 Asignando:
 Nodo de referencia de entrada A
 Nodo Constante de const-type 1 con valor 1
 Nodo Aritmético con operador 0 con resultado de tipo 1
+Nodo de put con entrada A
 Parsing finished!

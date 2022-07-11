@@ -79,6 +79,7 @@ void generate_statements(FILE *fp){
 	
 	printf("Colors:\n");
 	for(i = 0; i < var_count; i++){
+		printf("%d\n", var_count);
 		printf("%s: %d\n", var_name[i], colors[i]);
 	}
 	printf("\n");
@@ -557,11 +558,11 @@ void generate_arithm(FILE *fp, AST_Node_Arithm *node){
 			else if(const_op == 1){
 				if(Operand1 != 0){
 					temp_const = (AST_Node_Const *) node->left;
-					fprintf(fp, "MULI %s, %s, %d\n", GetRegisterName(node->g_index, 0), GetRegisterName(getGraphIndex(node->right), 0), temp_const->val);
+					fprintf(fp, "MUL %s, %s, %d\n", GetRegisterName(node->g_index, 0), GetRegisterName(getGraphIndex(node->right), 0), temp_const->val);
 				}
 				if(Operand2 != 0){
 					temp_const = (AST_Node_Const *) node->right;
-					fprintf(fp, "MULI %s, %s, %d\n", GetRegisterName(node->g_index, 0), GetRegisterName(getGraphIndex(node->left), 0), temp_const->val);
+					fprintf(fp, "MUL %s, %s, %d\n", GetRegisterName(node->g_index, 0), GetRegisterName(getGraphIndex(node->left), 0), temp_const->val);
 				}
 			}
 			else{
@@ -686,11 +687,11 @@ void generate_arithm(FILE *fp, AST_Node_Arithm *node){
 			else if(const_op == 1){
 				if(Operand1 != 0){
 					temp_const = (AST_Node_Const *) node->left;
-					fprintf(fp, "DIVI %s, %s, %d\n", GetRegisterName(node->g_index, 0), GetRegisterName(getGraphIndex(node->right), 0), temp_const->val);
+					fprintf(fp, "DIV %s, %s, %d\n", GetRegisterName(node->g_index, 0), GetRegisterName(getGraphIndex(node->right), 0), temp_const->val);
 				}
 				if(Operand2 != 0){
 					temp_const = (AST_Node_Const *) node->right;
-					fprintf(fp, "DIVI %s, %s, %d\n", GetRegisterName(node->g_index, 0), GetRegisterName(getGraphIndex(node->left), 0), temp_const->val);
+					fprintf(fp, "DIV %s, %s, %d\n", GetRegisterName(node->g_index, 0), GetRegisterName(getGraphIndex(node->left), 0), temp_const->val);
 				}
 			}
 			else{
@@ -1365,6 +1366,19 @@ void generate_load(FILE *fp, AST_Node_Ref *node){
 	}
 }
 
+void generate_put(FILE *fp, AST_Node_Put *node){
+	if(node->entry->st_type == REAL_TYPE){
+		fprintf(fp, "li $v0, 2\n");
+		fprintf(fp, "add.s $f12, $f30, %s\n",GetRegisterName(node->entry->g_index, 1));
+		fprintf(fp, "syscall\n");
+	}
+	else{
+		fprintf(fp, "li $v0, 1\n");
+		fprintf(fp, "add $a0, $zero, %s\n",GetRegisterName(node->entry->g_index, 0));
+		fprintf(fp, "syscall\n");
+	}
+}
+
 
 void generate_simple(FILE *fp, char* Label){
 	fprintf(fp, "J %s\n", Label);
@@ -1631,6 +1645,7 @@ void printVarArray(){
 	printf("\n");
 }
 
+
 // main function register allocation 
 void main_reg_allocation(AST_Node *node){
 	
@@ -1643,6 +1658,7 @@ void main_reg_allocation(AST_Node *node){
 	AST_Node_Elsif *temp_elsif;
 	AST_Node_While *temp_while;
 	AST_Node_Assign *temp_assign;
+	AST_Node_Put *temp_put;
 	
 	// temp variable name 
 	char name[MAXTOKENLEN];
@@ -1735,6 +1751,9 @@ void main_reg_allocation(AST_Node *node){
 			}
 			
 			break;
+		case PUT_NODE:
+			temp_put = (struct AST_Node_Put *) node;
+			break;
 		case REL_NODE:			
 			// used in branch and loop conditions - not stored 
 			break;
@@ -1825,6 +1844,7 @@ void main_func_traversal(FILE *fp, AST_Node *node){
 	AST_Node_Elsif *temp_elsif;
 	AST_Node_While *temp_while;
 	AST_Node_Assign *temp_assign;
+	AST_Node_Put *temp_put;
 	
 	// temp variable ST entry 
 	list_t *entry;
@@ -1867,12 +1887,20 @@ void main_func_traversal(FILE *fp, AST_Node *node){
 			
 			break;
 		case REL_NODE: 
+		
 			temp_rel = (struct AST_Node_Rel *) node;
 			
 			main_func_traversal(fp, node->left);
 			main_func_traversal(fp, node->right);
-		
-			generate_rel(fp, temp_rel, 0, "Temp_Label");
+			if (general == 0)
+			{
+				generate_rel(fp, temp_rel, 0, "Temp_Label");
+			}else{
+				generate_rel(fp, temp_rel, 1, "Temp_Label");
+				general = 0;
+			}
+			
+			
 			
 			break;
 		case EQU_NODE:
@@ -1880,14 +1908,25 @@ void main_func_traversal(FILE *fp, AST_Node *node){
 			
 			main_func_traversal(fp, node->left);
 			main_func_traversal(fp, node->right);
-		
-			generate_equ(fp, temp_equ, 0, "Temp_Label");
+			if (general == 0)
+			{
+				generate_equ(fp, temp_equ, 0, "Temp_Label");
+			}else{
+				generate_equ(fp, temp_equ, 1, "Temp_Label");
+				general = 0;
+			}
+			
+			
 			
 			break;
 		// reference case 
 		case REF_NODE:
 			temp_ref = (struct AST_Node_Ref *) node;
-			
+			//generate_load(fp, temp_ref);
+			break;
+		case PUT_NODE:
+			temp_put = (struct AST_Node_Put *) node;
+			generate_put(fp, temp_put);
 			break;
 		// constant case 
 		case CONST_NODE:
@@ -1908,11 +1947,8 @@ void main_func_traversal(FILE *fp, AST_Node *node){
             fprintf(fp, "li $v0, 10\n");
             fprintf(fp, "syscall\n");
             fprintf(fp, "Temp_Label: \n");
-
             main_func_traversal(fp, temp_if->if_branch);
-            fprintf(fp, "li $v0, 1\n");
-            fprintf(fp, "add $a0, $zero, $s1\n");
-            fprintf(fp, "syscall");
+            
             
         
             if(temp_if->elseif_count > 0 ){
@@ -1937,13 +1973,12 @@ void main_func_traversal(FILE *fp, AST_Node *node){
 			break;
 		// while case 
 		case WHILE_NODE:
+			
             temp_while = (struct AST_Node_While *) node;
             fprintf(fp, "while:\n");
+			general = 1;
             main_func_traversal(fp, temp_while->condition);
             main_func_traversal(fp, temp_while->while_branch);
-			fprintf(fp, "li $v0, 1\n");
-			fprintf(fp, "add $a0, $s2, $zero\n");
-			fprintf(fp, "syscall\n");
             fprintf(fp, "j while\n");
             fprintf(fp, "Temp_Label: \n");
             fprintf(fp, "li $v0, 10\n");

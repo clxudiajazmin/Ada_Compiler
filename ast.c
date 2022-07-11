@@ -292,6 +292,18 @@ AST_Node *new_ast_ref_node(list_t *entry, int ref){
 	return (struct AST_Node *) v;	
 }
 
+AST_Node *new_ast_put_node(list_t *entry){
+	// allocate memory
+	AST_Node_Put *v = malloc (sizeof (AST_Node_Put));
+	
+	// set entries
+	v->type = PUT_NODE;
+	v->entry = entry;
+	
+	// return type-casted result
+	return (struct AST_Node *) v;	
+}
+
 int expression_data_type(AST_Node *node){
 	// temp nodes 
 	AST_Node_Arithm *temp_arithm;
@@ -300,6 +312,7 @@ int expression_data_type(AST_Node *node){
 	AST_Node_Equ *temp_equ;
 	AST_Node_Ref *temp_ref;
 	AST_Node_Const *temp_const;
+	AST_Node_Put *temp_put;
 	
 	// return type depends on the AST node type 
 	switch(node->type){
@@ -372,6 +385,11 @@ int expression_data_type(AST_Node *node){
 				return temp_ref->entry->inf_type;
 			}
 			break;
+		case PUT_NODE:    // identifier reference 
+			temp_put = (AST_Node_Put *) node;
+
+			return temp_put->entry->st_type;
+			break;
 		case CONST_NODE:  // constant 
 			temp_const = (AST_Node_Const *) node;
 			return temp_const->const_type; // constant data type 
@@ -389,6 +407,7 @@ int getGraphIndex(AST_Node *node){
 	AST_Node_Rel *temp_rel;
 	AST_Node_Equ *temp_equ;
 	AST_Node_Ref *temp_ref;
+	AST_Node_Put *temp_put;
 	
 	// return type depends on the AST node type 
 	switch(node->type){
@@ -417,6 +436,11 @@ int getGraphIndex(AST_Node *node){
 			
 			return temp_ref->entry->g_index;
 			break;
+		case PUT_NODE:    // identifier reference 
+			temp_put = (AST_Node_Put *) node;
+			
+			return temp_put->entry->g_index;
+			break;
 		case CONST_NODE:  // constant 
 			return -1;
 			break;
@@ -442,6 +466,7 @@ void ast_print_node(AST_Node *node){
 	AST_Node_Rel *temp_rel;
 	AST_Node_Equ *temp_equ;
 	AST_Node_Ref *temp_ref;
+	AST_Node_Put *temp_put;
 	
 	switch(node->type){
 		case BASIC_NODE:
@@ -522,6 +547,10 @@ void ast_print_node(AST_Node *node){
 			temp_ref = (struct AST_Node_Ref *) node;
 			printf("Nodo de referencia de entrada %s\n", temp_ref->entry->st_name);
 			break;
+		case PUT_NODE:
+			temp_put = (struct AST_Node_Put *) node;
+			printf("Nodo de put con entrada %s\n", temp_put->entry->st_name);
+			break;
 		default: // wrong choice case 
 			fprintf(stderr, "Error en selección de nodo!\n");
 			exit(1);
@@ -558,6 +587,11 @@ void ast_traversal(AST_Node *node){
 		for(i = 0; i < temp_statements->statement_count; i++){
 			ast_traversal(temp_statements->statements[i]);
 		}
+	}
+	else if(node->type == PUT_NODE){
+		AST_Node_Put *temp_put = (struct AST_Node_Put *) node;
+		ast_print_node(node);	
+		
 	}
 	// the if case 
 	else if(node->type == IF_NODE){

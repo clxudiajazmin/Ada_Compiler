@@ -18,6 +18,7 @@ void generate_rel(FILE *fp, AST_Node_Rel *node, int invLogic, char* Label);
 void generate_equ(FILE *fp, AST_Node_Equ *node, int invLogic, char* Label);
 void generate_load(FILE *fp, AST_Node_Ref *node);
 
+void generate_put(FILE *fp, AST_Node_Put *node);
 /* Adjacency List */
 typedef struct AdjList{
 	int index;

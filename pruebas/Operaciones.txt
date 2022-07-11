@@ -1,0 +1,27 @@
+Nodo de declaración con 6 declaraciones
+Nodo Constante de const-type 1 con valor 6
+Nodo Constante de const-type 2 con valor 4.50
+Nodo Constante de const-type 1 con valor 10
+Nodo Constante de const-type 2 con valor 5.60
+Nodo Constante de const-type 4 con valor "HOLA MUNDO"
+Nodo Constante de const-type 3 con valor e
+Nodo de Statements con 6 statements
+Nodo de Asignación de entrada A
+Asignando:
+Nodo de referencia de entrada A
+Nodo Constante de const-type 1 con valor 10
+Nodo Aritmético con operador 0 con resultado de tipo 1
+Nodo de put con entrada A
+Nodo de Asignación de entrada C
+Asignando:
+Nodo de referencia de entrada C
+Nodo Constante de const-type 1 con valor 5
+Nodo Aritmético con operador 3 con resultado de tipo 1
+Nodo de put con entrada C
+Nodo de Asignación de entrada B
+Asignando:
+Nodo de referencia de entrada B
+Nodo de referencia de entrada D
+Nodo Aritmético con operador 0 con resultado de tipo 2
+Nodo de put con entrada B
+Parsing finished!
