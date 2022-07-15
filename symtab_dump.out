@@ -1,10 +1,6 @@
 ------------ -------------- ------ ------------
 Nombre         Tipo           Scope  N linea	
 ------------ -------------- ------ ------------
-asignatura   undef            5     6 
-A            int              1     2    9    9   10 
-B            real             2     3   13   13   14 
-C            int              3     4   11   11   12 
-D            real             4     5   13 
-letra        char             6     7 
-Main         undef            0     1   15 
+int1         int              1     2    5    7    8    8    9 
+int2         int              2     3    6    7 
+Main         undef            0     1   11 

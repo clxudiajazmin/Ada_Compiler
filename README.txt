@@ -11,4 +11,4 @@ $ ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/maste
 
 Ejecute el archivo comp.sh con un parámetro que sea el nombre del archivo .ada que desee compilar
 De forma que quede por ejemplo:
-sh comp.sh  IfNested.ada
+sh comp.sh IfTest.ada
